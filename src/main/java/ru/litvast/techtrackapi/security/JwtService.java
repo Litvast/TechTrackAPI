@@ -37,7 +37,7 @@ public class JwtService {
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(date)
-                .claim("token_type", "refresh")
+                .claim("token_type", "refreshUserToken")
                 .signWith(getSigningKey())
                 .compact();
     }
@@ -57,9 +57,8 @@ public class JwtService {
                     .parseSignedClaims(token);
             return true;
         } catch (JwtException e) {
-            e.printStackTrace();
+            return false;
         }
-        return false;
     }
 
     public boolean isAccessToken(String token) {
@@ -69,7 +68,7 @@ public class JwtService {
 
     public boolean isRefreshToken(String token) {
         Claims claims = getTokenClaims(token);
-        return "refresh".equals(claims.get("token_type", String.class));
+        return "refreshUserToken".equals(claims.get("token_type", String.class));
     }
 
     public String getUsernameFromJwtToken(String token) {

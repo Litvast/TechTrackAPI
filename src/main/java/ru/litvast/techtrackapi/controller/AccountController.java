@@ -1,58 +1,113 @@
 package ru.litvast.techtrackapi.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
-import ru.litvast.techtrackapi.dto.JwtTokensDTO;
-import ru.litvast.techtrackapi.dto.RefreshTokenDTO;
-import ru.litvast.techtrackapi.dto.UserCredentialsDTO;
-import ru.litvast.techtrackapi.repository.UserRepository;
+import ru.litvast.techtrackapi.dto.*;
+import ru.litvast.techtrackapi.exception.NoUsersFoundException;
+import ru.litvast.techtrackapi.exception.UserNotFoundException;
 import ru.litvast.techtrackapi.service.UserService;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/account")
 public class AccountController {
+
     private final UserService userService;
-    private final UserRepository userRepository;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody UserCredentialsDTO user) {
+    public ResponseEntity<?> signup(@Valid @RequestBody UserCredentialsDTO user) {
         try {
             userService.signup(user);
-        } catch (Exception e) {
+            return ResponseEntity.ok("Successfully");
+        } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Registration failed");
         }
-        return ResponseEntity.ok("Successfully");
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<?> signin(@RequestBody UserCredentialsDTO user) {
+    public ResponseEntity<?> signin(@Valid @RequestBody UserCredentialsDTO user) {
         try {
             JwtTokensDTO tokens = userService.signin(user);
             return ResponseEntity.ok(tokens);
         } catch (BadCredentialsException e) {
-            return ResponseEntity.badRequest().body("Invalid username or password");
-        } catch (AuthenticationException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
     }
 
-    @PostMapping("/refresh")
-    public ResponseEntity<?> refresh(@RequestBody RefreshTokenDTO refreshTokenDTO) {
+    @PostMapping("/refreshUserToken")
+    public ResponseEntity<?> refresh(@Valid @RequestBody RefreshTokenDTO refreshTokenDTO) {
         try {
-            JwtTokensDTO tokens = userService.refresh(refreshTokenDTO);
+            JwtTokensDTO tokens = userService.refreshUserToken(refreshTokenDTO);
             return ResponseEntity.ok(tokens);
         } catch (AuthenticationException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @PostMapping("/users/add")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> addUser(@Valid @RequestBody UserCreateDTO userCreateDTO) {
+        try {
+            UserNoPasswordDTO userNoPasswordDTO = userService.addUser(userCreateDTO);
+            return ResponseEntity.ok(userNoPasswordDTO);
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @GetMapping("/all")
+    @PutMapping("/users/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> updateUser(@PathVariable("id") String id,
+                                        @Valid @RequestBody UserUpdateDTO userUpdateDTO) {
+        try {
+            UserNoPasswordDTO userNoPasswordDTO = userService.updateUser(id, userUpdateDTO);
+            return ResponseEntity.ok(userNoPasswordDTO);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/users/{id}")
+    public ResponseEntity<?> getUser(@PathVariable("id") String id) {
+        try {
+            UserNoPasswordDTO userNoPasswordDTO = userService.getUserById(id);
+            return ResponseEntity.ok(userNoPasswordDTO);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/users")
     public ResponseEntity<?> getAllUsers() {
-        return ResponseEntity.ok(userRepository.findAll());
+        try {
+            return ResponseEntity.ok(userService.getAllUsers());
+        } catch (NoUsersFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @DeleteMapping("/users/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> deleteUser(@PathVariable("id") String id) {
+        try {
+            userService.deleteUser(id);
+            return ResponseEntity.ok("Successfully");
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
