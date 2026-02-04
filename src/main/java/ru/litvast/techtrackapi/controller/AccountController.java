@@ -1,5 +1,8 @@
 package ru.litvast.techtrackapi.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +23,11 @@ public class AccountController {
 
     private final UserService userService;
 
+    @Tag(name = "auth", description = "Методы для регистрации и аутентификации в системе")
+    @Operation(
+            summary = "Регистрация пользователя",
+            description = "В ответ выдаётся сообщение о успешной регистрации."
+    )
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@Valid @RequestBody UserCredentialsDTO user) {
         try {
@@ -32,6 +40,11 @@ public class AccountController {
         }
     }
 
+    @Tag(name = "auth", description = "Методы для регистрации и аутентификации в системе")
+    @Operation(
+            summary = "Авторизация пользователя",
+            description = "В ответ выдаётся json-объект с двумя JWT-токенами: accept (доступа) и refresh (обновления)."
+    )
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@Valid @RequestBody UserCredentialsDTO user) {
         try {
@@ -42,6 +55,12 @@ public class AccountController {
         }
     }
 
+    @Tag(name = "auth", description = "Методы для регистрации и аутентификации в системе")
+    @Operation(
+            summary = "Обновление accept (доступа) токена",
+            description = "В ответ выдаётся json-объект с двумя JWT-токенами: accept (доступа) и refresh (обновления, который передал пользователь).",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
     @PostMapping("/refreshUserToken")
     public ResponseEntity<?> refresh(@Valid @RequestBody RefreshTokenDTO refreshTokenDTO) {
         try {
@@ -52,6 +71,12 @@ public class AccountController {
         }
     }
 
+    @Tag(name = "users", description = "Методы для работы с аккаунтами пользователей")
+    @Operation(
+            summary = "Добавление пользователя в систему (ADMIN)",
+            description = "В ответ выдаётся объект User-а с полями id, username и role.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
     @PostMapping("/users/add")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> addUser(@Valid @RequestBody UserCreateDTO userCreateDTO) {
@@ -63,6 +88,12 @@ public class AccountController {
         }
     }
 
+    @Tag(name = "users", description = "Методы для работы с аккаунтами пользователей")
+    @Operation(
+            summary = "Изменение данных пользователя по айди (ADMIN)",
+            description = "В ответ выдаётся обновлённый объект User-а с полями id, username и role.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
     @PutMapping("/users/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateUser(@PathVariable("id") String id,
@@ -77,6 +108,12 @@ public class AccountController {
         }
     }
 
+    @Tag(name = "users", description = "Методы для работы с аккаунтами пользователей")
+    @Operation(
+            summary = "Поиск пользователя по айди",
+            description = "В ответ выдаётся найденный объект User-а с полями id, username и role.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
     @GetMapping("/users/{id}")
     public ResponseEntity<?> getUser(@PathVariable("id") String id) {
         try {
@@ -89,6 +126,12 @@ public class AccountController {
         }
     }
 
+    @Tag(name = "users", description = "Методы для работы с аккаунтами пользователей")
+    @Operation(
+            summary = "Вывод списка всех пользователей системы",
+            description = "В ответ выдаётся список объектов User-а с полями id, username и role.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
     @GetMapping("/users")
     public ResponseEntity<?> getAllUsers() {
         try {
@@ -98,6 +141,12 @@ public class AccountController {
         }
     }
 
+    @Tag(name = "users", description = "Методы для работы с аккаунтами пользователей")
+    @Operation(
+            summary = "Удаление пользователя по айди (ADMIN)",
+            description = "В ответ выдаётся сообщение о успешном удалении пользователя.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
     @DeleteMapping("/users/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteUser(@PathVariable("id") String id) {

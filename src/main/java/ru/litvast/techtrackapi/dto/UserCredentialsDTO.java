@@ -15,7 +15,7 @@ public class UserCredentialsDTO {
     private String username;
 
     @NotBlank(message = "Password cannot be empty")
-    @Size(min = 8, max = 255,
+    @Size(min = 8, max = 72,
             message = "The password must be at least 8 characters and no more than 255 characters")
     @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{8,}$",
             message = "The password must contain at least one capital and lowercase letter, as well as a number")
