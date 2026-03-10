@@ -18,11 +18,11 @@ public class Printer extends Equipment {
     @Enumerated(EnumType.STRING)
     private PrintType printType;
 
-    private boolean isColor;
-    private double speed;
+    private Boolean isColor;
+    private Double speed;
 
-    private int widthResolution;
-    private int heightResolution;
+    private Integer widthResolution;
+    private Integer heightResolution;
 
     private String consumption;
 }

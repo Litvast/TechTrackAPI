@@ -1,4 +1,4 @@
-package ru.litvast.techtrackapi.dto;
+package ru.litvast.techtrackapi.dto.user;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

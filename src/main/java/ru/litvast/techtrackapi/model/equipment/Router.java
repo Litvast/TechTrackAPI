@@ -15,12 +15,12 @@ import lombok.Setter;
 @Table(name = "routers")
 public class Router extends Equipment {
 
-    private int wanBandwidth;
-    private int lanBandwidth;
+    private Integer wanBandwidth;
+    private Integer lanBandwidth;
 
-    private int wanPorts;
-    private int lanPorts;
-    private int usbPorts;
+    private Integer wanPorts;
+    private Integer lanPorts;
+    private Integer usbPorts;
 
     @Enumerated(EnumType.STRING)
     private RouterBand band;

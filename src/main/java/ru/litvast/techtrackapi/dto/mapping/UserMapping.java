@@ -1,9 +1,9 @@
 package ru.litvast.techtrackapi.dto.mapping;
 
 import org.mapstruct.Mapper;
-import ru.litvast.techtrackapi.dto.UserCredentialsDTO;
-import ru.litvast.techtrackapi.dto.UserCreateDTO;
-import ru.litvast.techtrackapi.dto.UserNoPasswordDTO;
+import ru.litvast.techtrackapi.dto.user.UserCredentialsDTO;
+import ru.litvast.techtrackapi.dto.user.UserCreateDTO;
+import ru.litvast.techtrackapi.dto.user.UserNoPasswordDTO;
 import ru.litvast.techtrackapi.model.User;
 
 @Mapper(componentModel = "spring")

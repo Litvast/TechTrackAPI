@@ -1,4 +1,4 @@
-package ru.litvast.techtrackapi.model;
+package ru.litvast.techtrackapi.model.equipment.computer;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,20 +11,20 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "rooms")
-public class Room {
+@Table(name = "motherboard_form_factors")
+public class MotherboardFormFactor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true, nullable = false)
+    private String code;
+
+    @Column(unique = true, nullable = false)
     private String name;
 
-    private String description;
-
-    @ManyToOne
-    @JoinColumn(name = "building_floor_id", nullable = false)
-    private BuildingFloor buildingFloor;
+    private Integer widthMm;
+    private Integer heightMm;
 }

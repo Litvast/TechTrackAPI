@@ -1,4 +1,4 @@
-package ru.litvast.techtrackapi.dto;
+package ru.litvast.techtrackapi.dto.user;
 
 import lombok.Data;
 import ru.litvast.techtrackapi.model.Role;
