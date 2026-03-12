@@ -6,7 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import ru.litvast.techtrackapi.dto.JwtTokensDTO;
+import ru.litvast.techtrackapi.model.dto.JwtTokensDto;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -42,8 +42,8 @@ public class JwtService {
                 .compact();
     }
 
-    public JwtTokensDTO generateJwtTokens(String username) {
-        return new JwtTokensDTO(
+    public JwtTokensDto generateJwtTokens(String username) {
+        return new JwtTokensDto(
                 generateAccessToken(username),
                 generateRefreshToken(username)
         );

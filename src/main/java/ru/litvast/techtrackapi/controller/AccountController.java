@@ -11,11 +11,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
-import ru.litvast.techtrackapi.dto.*;
-import ru.litvast.techtrackapi.dto.user.UserCreateDTO;
-import ru.litvast.techtrackapi.dto.user.UserCredentialsDTO;
-import ru.litvast.techtrackapi.dto.user.UserNoPasswordDTO;
-import ru.litvast.techtrackapi.dto.user.UserUpdateDTO;
+import ru.litvast.techtrackapi.model.dto.JwtTokensDto;
+import ru.litvast.techtrackapi.model.dto.RefreshTokenDto;
+import ru.litvast.techtrackapi.model.dto.user.UserCreateDto;
+import ru.litvast.techtrackapi.model.dto.user.UserCredentialsDto;
+import ru.litvast.techtrackapi.model.dto.user.UserNoPasswordDto;
+import ru.litvast.techtrackapi.model.dto.user.UserUpdateDto;
 import ru.litvast.techtrackapi.exception.NoUsersFoundException;
 import ru.litvast.techtrackapi.exception.UserNotFoundException;
 import ru.litvast.techtrackapi.service.UserService;
@@ -33,7 +34,7 @@ public class AccountController {
             description = "В ответ выдаётся сообщение о успешной регистрации."
     )
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@Valid @RequestBody UserCredentialsDTO user) {
+    public ResponseEntity<?> signup(@Valid @RequestBody UserCredentialsDto user) {
         try {
             userService.signup(user);
             return ResponseEntity.ok("Successfully");
@@ -50,9 +51,9 @@ public class AccountController {
             description = "В ответ выдаётся json-объект с двумя JWT-токенами: accept (доступа) и refresh (обновления)."
     )
     @PostMapping("/signin")
-    public ResponseEntity<?> signin(@Valid @RequestBody UserCredentialsDTO user) {
+    public ResponseEntity<?> signin(@Valid @RequestBody UserCredentialsDto user) {
         try {
-            JwtTokensDTO tokens = userService.signin(user);
+            JwtTokensDto tokens = userService.signin(user);
             return ResponseEntity.ok(tokens);
         } catch (BadCredentialsException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
@@ -66,9 +67,9 @@ public class AccountController {
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PostMapping("/refreshUserToken")
-    public ResponseEntity<?> refresh(@Valid @RequestBody RefreshTokenDTO refreshTokenDTO) {
+    public ResponseEntity<?> refresh(@Valid @RequestBody RefreshTokenDto refreshTokenDTO) {
         try {
-            JwtTokensDTO tokens = userService.refreshUserToken(refreshTokenDTO);
+            JwtTokensDto tokens = userService.refreshUserToken(refreshTokenDTO);
             return ResponseEntity.ok(tokens);
         } catch (AuthenticationException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
@@ -83,9 +84,9 @@ public class AccountController {
     )
     @PostMapping("/users/add")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> addUser(@Valid @RequestBody UserCreateDTO userCreateDTO) {
+    public ResponseEntity<?> addUser(@Valid @RequestBody UserCreateDto userCreateDTO) {
         try {
-            UserNoPasswordDTO userNoPasswordDTO = userService.addUser(userCreateDTO);
+            UserNoPasswordDto userNoPasswordDTO = userService.addUser(userCreateDTO);
             return ResponseEntity.ok(userNoPasswordDTO);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -101,9 +102,9 @@ public class AccountController {
     @PutMapping("/users/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateUser(@PathVariable("id") String id,
-                                        @Valid @RequestBody UserUpdateDTO userUpdateDTO) {
+                                        @Valid @RequestBody UserUpdateDto userUpdateDTO) {
         try {
-            UserNoPasswordDTO userNoPasswordDTO = userService.updateUser(id, userUpdateDTO);
+            UserNoPasswordDto userNoPasswordDTO = userService.updateUser(id, userUpdateDTO);
             return ResponseEntity.ok(userNoPasswordDTO);
         } catch (UserNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -121,7 +122,7 @@ public class AccountController {
     @GetMapping("/users/{id}")
     public ResponseEntity<?> getUser(@PathVariable("id") String id) {
         try {
-            UserNoPasswordDTO userNoPasswordDTO = userService.getUserById(id);
+            UserNoPasswordDto userNoPasswordDTO = userService.getUserById(id);
             return ResponseEntity.ok(userNoPasswordDTO);
         } catch (UserNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);

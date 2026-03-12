@@ -10,16 +10,17 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.litvast.techtrackapi.dto.*;
-import ru.litvast.techtrackapi.dto.mapping.UserMapping;
-import ru.litvast.techtrackapi.dto.user.UserCreateDTO;
-import ru.litvast.techtrackapi.dto.user.UserCredentialsDTO;
-import ru.litvast.techtrackapi.dto.user.UserNoPasswordDTO;
-import ru.litvast.techtrackapi.dto.user.UserUpdateDTO;
+import ru.litvast.techtrackapi.model.dto.JwtTokensDto;
+import ru.litvast.techtrackapi.model.dto.RefreshTokenDto;
+import ru.litvast.techtrackapi.model.dto.mapping.UserMapping;
+import ru.litvast.techtrackapi.model.dto.user.UserCreateDto;
+import ru.litvast.techtrackapi.model.dto.user.UserCredentialsDto;
+import ru.litvast.techtrackapi.model.dto.user.UserNoPasswordDto;
+import ru.litvast.techtrackapi.model.dto.user.UserUpdateDto;
 import ru.litvast.techtrackapi.exception.NoUsersFoundException;
 import ru.litvast.techtrackapi.exception.UserNotFoundException;
-import ru.litvast.techtrackapi.model.Role;
-import ru.litvast.techtrackapi.model.User;
+import ru.litvast.techtrackapi.model.entity.Role;
+import ru.litvast.techtrackapi.model.entity.User;
 import ru.litvast.techtrackapi.repository.UserRepository;
 import ru.litvast.techtrackapi.security.JwtService;
 
@@ -37,18 +38,18 @@ public class UserService {
     private final JwtService jwtService;
 
     @Transactional
-    public void signup(UserCredentialsDTO userCredentialsDTO) {
+    public void signup(UserCredentialsDto userCredentialsDTO) {
         if (userRepository.existsByUsernameIgnoreCase(userCredentialsDTO.getUsername())) {
             throw new IllegalArgumentException("User with this nickname already exists");
         }
 
-        User user = userMapping.userCredentialsDTOToUser(userCredentialsDTO);
+        User user = userMapping.userCredentialsDtoToUser(userCredentialsDTO);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(Role.ROLE_USER);
         userRepository.save(user);
     }
 
-    public JwtTokensDTO signin(UserCredentialsDTO userCredentialsDTO) throws AuthenticationException {
+    public JwtTokensDto signin(UserCredentialsDto userCredentialsDTO) throws AuthenticationException {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -63,7 +64,7 @@ public class UserService {
         }
     }
 
-    public JwtTokensDTO refreshUserToken(RefreshTokenDTO refreshTokenDTO) throws AuthenticationException {
+    public JwtTokensDto refreshUserToken(RefreshTokenDto refreshTokenDTO) throws AuthenticationException {
         String refreshToken = refreshTokenDTO.getToken();
 
         if (!jwtService.validateJwtToken(refreshToken)
@@ -76,11 +77,11 @@ public class UserService {
             new UserNotFoundException(username)
         );
         String accessToken = jwtService.generateAccessToken(user.getUsername());
-        return new JwtTokensDTO(accessToken, refreshToken);
+        return new JwtTokensDto(accessToken, refreshToken);
     }
 
     @Transactional
-    public UserNoPasswordDTO addUser(UserCreateDTO userCreateDTO) {
+    public UserNoPasswordDto addUser(UserCreateDto userCreateDTO) {
         if (userCreateDTO == null) {
             throw new IllegalArgumentException("User data cannot be null");
         }
@@ -96,18 +97,19 @@ public class UserService {
             );
         }
 
-        if (userCreateDTO.getRole() == null) {
-            userCreateDTO.setRole(Role.ROLE_USER);
+        User user = userMapping.userFullInfoDtoToUser(userCreateDTO);
+
+        if (user.getRole() == null) {
+            user.setRole(Role.ROLE_USER);
         }
 
-        User user = userMapping.userFullInfoDTOToUser(userCreateDTO);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
-        return userMapping.userToUserNoPasswordDTO(user);
+        return userMapping.userToUserNoPasswordDto(user);
     }
 
     @Transactional
-    public UserNoPasswordDTO updateUser(String stringId, UserUpdateDTO userUpdateDTO) {
+    public UserNoPasswordDto updateUser(String stringId, UserUpdateDto userUpdateDTO) {
         int id = parseIdStringToInt(stringId);
 
         User user = userRepository.findById(id).orElseThrow(() ->
@@ -135,35 +137,35 @@ public class UserService {
                 : user.getRole());
 
         userRepository.save(user);
-        return userMapping.userToUserNoPasswordDTO(user);
+        return userMapping.userToUserNoPasswordDto(user);
     }
 
-    public UserNoPasswordDTO getUserById(String stringId) {
+    public UserNoPasswordDto getUserById(String stringId) {
         int id  = parseIdStringToInt(stringId);
 
         User user = userRepository.findById(id).orElseThrow(() ->
                 new UserNotFoundException(id)
         );
 
-        return userMapping.userToUserNoPasswordDTO(user);
+        return userMapping.userToUserNoPasswordDto(user);
     }
 
-    public UserNoPasswordDTO getUserByUsername(String username) {
+    public UserNoPasswordDto getUserByUsername(String username) {
         User user = userRepository.findByUsernameIgnoreCase(username).orElseThrow(() ->
                 new UserNotFoundException("User with this username not found"));
 
-        return userMapping.userToUserNoPasswordDTO(user);
+        return userMapping.userToUserNoPasswordDto(user);
     }
 
-    public List<UserNoPasswordDTO> getAllUsers() {
+    public List<UserNoPasswordDto> getAllUsers() {
         List<User> users = userRepository.findAll();
 
         if (users.isEmpty()) {
             throw new NoUsersFoundException();
         }
 
-        List<UserNoPasswordDTO> usersWithoutPassword = new ArrayList<>(users.size());
-        users.forEach(user -> usersWithoutPassword.add(userMapping.userToUserNoPasswordDTO(user)));
+        List<UserNoPasswordDto> usersWithoutPassword = new ArrayList<>(users.size());
+        users.forEach(user -> usersWithoutPassword.add(userMapping.userToUserNoPasswordDto(user)));
         return usersWithoutPassword;
     }
 

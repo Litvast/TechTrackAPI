@@ -1,7 +1,7 @@
 package ru.litvast.techtrackapi.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.litvast.techtrackapi.model.Room;
+import ru.litvast.techtrackapi.model.entity.Room;
 
 public interface RoomRepository extends JpaRepository<Room, Long> {
 }

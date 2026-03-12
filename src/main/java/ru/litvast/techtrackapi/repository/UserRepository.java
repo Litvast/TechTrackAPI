@@ -1,7 +1,7 @@
 package ru.litvast.techtrackapi.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.litvast.techtrackapi.model.User;
+import ru.litvast.techtrackapi.model.entity.User;
 
 import java.util.Optional;
 

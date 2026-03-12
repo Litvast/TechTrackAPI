@@ -11,7 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ru.litvast.techtrackapi.model.User;
+import ru.litvast.techtrackapi.model.entity.User;
 import ru.litvast.techtrackapi.service.UserDetailsServiceImpl;
 
 import java.io.IOException;

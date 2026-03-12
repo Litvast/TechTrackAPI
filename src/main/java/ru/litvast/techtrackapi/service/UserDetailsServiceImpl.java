@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.litvast.techtrackapi.model.User;
+import ru.litvast.techtrackapi.model.entity.User;
 import ru.litvast.techtrackapi.repository.UserRepository;
 
 @Service
