@@ -1,12 +1,15 @@
 package ru.litvast.techtrackapi.model.dto.equipment.computer;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
-import lombok.Value;
-import ru.litvast.techtrackapi.model.entity.equipment.computer.CpuArchitecture;
-import ru.litvast.techtrackapi.model.entity.equipment.computer.CpuSocket;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Value
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProcessorDto {
 
@@ -14,42 +17,45 @@ public class ProcessorDto {
     @NotBlank(message = "Name is required")
     @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s.-/]+$",
             message = "Only Latin and Russian characters, numbers, spaces, dots, slashes and hyphens are allowed")
-    String name;
+    private String name;
 
     @Size(message = "Manufacturer cannot be longer than 255 characters", max = 255)
     @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s.-/]+$",
             message = "Only Latin and Russian characters, numbers, spaces, dots, slashes and hyphens are allowed")
-    String manufacturer;
+    private String manufacturer;
 
     @NegativeOrZero(message = "Clock frequency cannot be negative or zero")
-    Double clockFrequencyGHz;
+    private Double clockFrequencyGHz;
 
     @NegativeOrZero(message = "Turbo clock frequency cannot be negative or zero")
-    Double turboClockFrequencyGHz;
+    private Double turboClockFrequencyGHz;
 
     @NegativeOrZero(message = "Number of cores cannot be negative or zero")
-    Integer numberOfCores;
+    private Integer numberOfCores;
 
     @NegativeOrZero(message = "Number of threads cannot be negative or zero")
-    Integer numberOfThreads;
+    private Integer numberOfThreads;
 
     @NegativeOrZero(message = "L1 cache cannot be negative or zero")
-    Integer l1CacheKB;
+    private Integer l1CacheKB;
 
     @NegativeOrZero(message = "L2 cache cannot be negative or zero")
-    Integer l2CacheKB;
+    private Integer l2CacheKB;
 
     @NegativeOrZero(message = "L3 cache cannot be negative or zero")
-    Integer l3CacheMB;
+    private Integer l3CacheMB;
 
     @NegativeOrZero(message = "TDP cannot be negative or zero")
-    Integer tdpWatts;
+    private Integer tdpWatts;
 
     @NegativeOrZero(message = "Lithography cannot be negative or zero")
-    Integer lithographyNm;
+    private Integer lithographyNm;
 
-    CpuArchitectureDto architecture;
-    CpuSocketDto socket;
+    @Schema(description = "CPU architecture details")
+    private CpuArchitectureDto architecture;
+
+    @Schema(description = "CPU socket details")
+    private CpuSocketDto socket;
 
     @AssertTrue(message = "If the number of threads is filled, then the number of cores must also be filled")
     private boolean isCoresPresentWhenThreadsPresent() {

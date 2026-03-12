@@ -2,10 +2,14 @@ package ru.litvast.techtrackapi.model.dto.equipment.computer;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.*;
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.litvast.techtrackapi.model.entity.equipment.computer.GpuMemoryType;
 
-@Value
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class VideoCardDto {
 
@@ -13,53 +17,53 @@ public class VideoCardDto {
     @NotBlank(message = "Name is required")
     @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s.-/]+$",
             message = "Only Latin and Russian characters, numbers, spaces, dots, slashes and hyphens are allowed")
-    String name;
+    private String name;
 
     @Size(message = "Manufacturer cannot be longer than 255 characters", max = 255)
     @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s.-/]+$",
             message = "Only Latin and Russian characters, numbers, spaces, dots, slashes and hyphens are allowed")
-    String manufacturer;
+    private String manufacturer;
 
     @Size(message = "Architecture cannot be longer than 255 characters", max = 255)
     @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s.-/]+$",
             message = "Only Latin and Russian characters, numbers, spaces, dots, slashes and hyphens are allowed")
-    String architecture;
+    private String architecture;
 
     @NegativeOrZero(message = "Clock frequency cannot be negative or zero")
-    Integer clockFrequencyMHz;
+    private Integer clockFrequencyMHz;
 
     @NegativeOrZero(message = "Turbo clock frequency cannot be negative or zero")
-    Integer turboClockFrequencyMHz;
+    private Integer turboClockFrequencyMHz;
 
     @NegativeOrZero(message = "Lithography cannot be negative or zero")
-    Integer lithographyNm;
+    private Integer lithographyNm;
 
     @NegativeOrZero(message = "Number of ALUs cannot be negative or zero")
-    Integer numberOfAlus;
+    private Integer numberOfAlus;
 
     @NegativeOrZero(message = "Number of TPUs cannot be negative or zero")
-    Integer numberOfTmus;
+    private Integer numberOfTmus;
 
     @NegativeOrZero(message = "Number of ROPs cannot be negative or zero")
-    Integer numberOfRops;
+    private Integer numberOfRops;
 
-    GpuMemoryType vramType;
+    private GpuMemoryType vramType;
 
     @NegativeOrZero(message = "VRAM capacity cannot be negative or zero")
-    Integer vramCapacityMb;
+    private Integer vramCapacityMb;
 
     @NegativeOrZero(message = "VRAM frequency cannot be negative or zero")
-    Integer vramFrequencyMHz;
+    private Integer vramFrequencyMHz;
 
     @NegativeOrZero(message = "VRAM bus cannot be negative or zero")
-    Integer vramBusBit;
+    private Integer vramBusBit;
 
     @NegativeOrZero(message = "TDP cannot be negative or zero")
-    Integer tdpWatts;
+    private Integer tdpWatts;
 
     @Pattern(regexp = "^[0-9]\\.[0-9]$",
             message = "PCIe version must be in format X.Y (e.g., 3.0, 4.0, 5.0)")
-    String pcieVersion;
+    private String pcieVersion;
 
     @AssertTrue(message = "If the turbo clock frequency is filled, then the clock frequency must also be filled")
     private boolean isClockPresentWhenTurboClockPresent() {

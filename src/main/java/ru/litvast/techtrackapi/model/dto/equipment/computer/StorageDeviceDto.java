@@ -2,9 +2,13 @@ package ru.litvast.techtrackapi.model.dto.equipment.computer;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.*;
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Value
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class StorageDeviceDto {
 
@@ -12,46 +16,46 @@ public class StorageDeviceDto {
     @NotBlank(message = "Name is required")
     @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s.-/]+$",
             message = "Only Latin and Russian characters, numbers, spaces, dots, slashes and hyphens are allowed")
-    String name;
+    private String name;
 
     @Size(message = "Manufacturer cannot be longer than 255 characters", max = 255)
     @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s.-/]+$",
             message = "Only Latin and Russian characters, numbers, spaces, dots, slashes and hyphens are allowed")
-    String manufacturer;
+    private String manufacturer;
 
     @NegativeOrZero(message = "Capacity cannot be negative or zero")
-    Integer capacityGb;
+    private Integer capacityGb;
 
     @Size(message = "Connection interface cannot be longer than 10 characters", max = 10)
     @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s.-/]+$",
             message = "Only Latin and Russian characters, numbers, spaces, dots, slashes and hyphens are allowed")
-    String connectionInterface;
+    private String connectionInterface;
 
     @Size(message = "Connection interface cannot be longer than 10 characters", max = 10)
     @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s.-/]+$",
             message = "Only Latin and Russian characters, numbers, spaces, dots, slashes and hyphens are allowed")
-    String formFactor;
+    private String formFactor;
 
     @NegativeOrZero(message = "Read speed cannot be negative or zero")
-    Integer readSpeedMbps;
+    private Integer readSpeedMbps;
 
     @NegativeOrZero(message = "Write speed cannot be negative or zero")
-    Integer writeSpeedMbps;
+    private Integer writeSpeedMbps;
 
     // SSD
     @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s.-/]+$",
             message = "Only Latin and Russian characters, numbers, spaces, dots, slashes and hyphens are allowed")
-    String nandType;
+    private String nandType;
 
     @NegativeOrZero(message = "TBW cannot be negative or zero")
-    Integer tbw;
+    private Integer tbw;
 
     // HDD
     @NegativeOrZero(message = "RPM cannot be negative or zero")
-    Integer rpm;
+    private Integer rpm;
 
     @NegativeOrZero(message = "Height cannot be negative or zero")
-    Double heightMm;
+    private Double heightMm;
 
     @AssertTrue(message = "Specify the parameters that are specific to only one type of storage device (SSD or HDD)")
     private boolean checkDriveMatchesSameType() {
