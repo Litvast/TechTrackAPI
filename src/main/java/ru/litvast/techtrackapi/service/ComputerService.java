@@ -1,10 +1,14 @@
 package ru.litvast.techtrackapi.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.litvast.techtrackapi.exception.EntityNotFoundException;
+import ru.litvast.techtrackapi.exception.NoEntitiesFoundException;
 import ru.litvast.techtrackapi.model.dto.equipment.computer.*;
-import ru.litvast.techtrackapi.model.dto.mapping.equipment.computer.ComputerMapping;
+import ru.litvast.techtrackapi.model.dto.mapping.equipment.computer.*;
 import ru.litvast.techtrackapi.model.entity.equipment.computer.Computer;
 import ru.litvast.techtrackapi.repository.equipment.computer.ComputerRepository;
 
@@ -22,6 +26,12 @@ public class ComputerService {
     private final StorageDeviceService storageDeviceService;
     private final ComputerMapping computerMapping;
     private final ComputerRepository computerRepository;
+    private final ProcessorMapping processorMapping;
+    private final MotherboardMapping motherboardMapping;
+    private final VideoCardMapping videoCardMapping;
+    private final PowerSupplyMapping powerSupplyMapping;
+    private final RamMapping ramMapping;
+    private final StorageDeviceMapping storageDeviceMapping;
 
     @Transactional
     public ComputerDto addComputer(ComputerDto computerDto) {
@@ -95,6 +105,149 @@ public class ComputerService {
         Computer computer = computerMapping.toEntity(computerDto);
         computerRepository.save(computer);
         return computerMapping.toDto(computer);
+    }
+
+    // READ all with pagination
+    public Page<ComputerDto> getAllComputers(Pageable pageable) {
+        Page<Computer> computers = computerRepository.findAll(pageable);
+        if (computers.isEmpty()) {
+            throw new NoEntitiesFoundException("No computers found");
+        }
+        return computers.map(computerMapping::toDto);
+    }
+
+    // READ by id
+    public ComputerDto getComputerById(Long id) {
+        Computer computer = computerRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Computer with id '%d' not found", id)
+                ));
+        return computerMapping.toDto(computer);
+    }
+
+    // UPDATE
+    @Transactional
+    public ComputerDto updateComputer(ComputerUpdateDto computerDto) {
+        // Проверка существования
+        Computer existingComputer = computerRepository.findById(computerDto.getId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Computer with id '%d' not found", computerDto.getId())
+                ));
+
+        // Проверка уникальности имени (если изменилось)
+        if (!existingComputer.getName().equalsIgnoreCase(computerDto.getName())) {
+            if (computerRepository.existsByNameIgnoreCase(computerDto.getName())) {
+                throw new IllegalArgumentException(
+                        String.format("Computer '%s' is already taken", computerDto.getName())
+                );
+            }
+        }
+
+        ComputerDto tempComputerDto = computerMapping.toDto(computerDto);
+
+        if (tempComputerDto.getProcessor() != null) {
+            tempComputerDto.setProcessor(tempComputerDto.getProcessor().getId() != null
+                ? processorService.getProcessorById(tempComputerDto.getProcessor().getId())
+                : processorService.addProcessor(tempComputerDto.getProcessor()));
+        } else {
+            tempComputerDto.setProcessor(processorMapping.toDto(existingComputer.getProcessor()));
+        }
+
+        if (tempComputerDto.getMotherboard() != null) {
+            tempComputerDto.setMotherboard(tempComputerDto.getMotherboard().getId() != null
+                    ? motherboardService.getMotherboardById(tempComputerDto.getMotherboard().getId())
+                    : motherboardService.addMotherboard(tempComputerDto.getMotherboard()));
+        } else {
+            tempComputerDto.setMotherboard(motherboardMapping.toDto(existingComputer.getMotherboard()));
+        }
+
+        if (tempComputerDto.getVideoCard() != null) {
+            tempComputerDto.setVideoCard(tempComputerDto.getVideoCard().getId() != null
+                    ? videoCardService.getVideoCardById(tempComputerDto.getVideoCard().getId())
+                    : videoCardService.addVideoCard(tempComputerDto.getVideoCard()));
+        } else {
+            tempComputerDto.setVideoCard(videoCardMapping.toDto(existingComputer.getVideoCard()));
+        }
+
+        if (tempComputerDto.getPowerSupply() != null) {
+            tempComputerDto.setPowerSupply(tempComputerDto.getPowerSupply().getId() != null
+                    ? powerSupplyService.getPowerSupplyById(tempComputerDto.getPowerSupply().getId())
+                    : powerSupplyService.addPowerSupply(tempComputerDto.getPowerSupply()));
+        } else {
+            tempComputerDto.setPowerSupply(powerSupplyMapping.toDto(existingComputer.getPowerSupply()));
+        }
+
+        if (tempComputerDto.getRams() != null && !tempComputerDto.getRams().isEmpty()) {
+            Map<String, Long> ramNameId = new HashMap<>();
+            List<RamDto> tempRamList = new ArrayList<>();
+            tempComputerDto.getRams().forEach(ram -> {
+                RamDto tempRamDto;
+                if (ram.getName() != null) {
+                    if (!ramNameId.containsKey(ram.getName().toLowerCase())) {
+                        tempRamDto = ramService.addRam(ram);
+
+                        ramNameId.put(tempRamDto.getName().toLowerCase(), tempRamDto.getId());
+                    } else {
+                        tempRamDto = ramService.getRamById(ramNameId.get(ram.getName().toLowerCase()));
+                    }
+                    tempRamList.add(tempRamDto);
+                } else {
+                    tempRamDto = ramService.getRamById(ram.getId());
+                    tempRamList.add(tempRamDto);
+                }
+            });
+
+            tempComputerDto.setRams(tempRamList);
+        } else {
+            tempComputerDto.setRams(ramMapping.toDtoList(existingComputer.getRams()));
+        }
+
+        if (tempComputerDto.getStorageDevices() != null && !tempComputerDto.getStorageDevices().isEmpty()) {
+            Map<String, Long> storageDeviceNameId = new HashMap<>();
+            List<StorageDeviceDto> tempStorageDeviceList = new ArrayList<>();
+            tempComputerDto.getStorageDevices().forEach(storageDeviceDto -> {
+                StorageDeviceDto tempStorageDeviceDto;
+                if (storageDeviceDto.getName() != null) {
+                    if (!storageDeviceNameId.containsKey(storageDeviceDto.getName().toLowerCase())) {
+                        tempStorageDeviceDto = storageDeviceService.addStorageDevice(storageDeviceDto);
+
+                        storageDeviceNameId.put(tempStorageDeviceDto.getName().toLowerCase(), tempStorageDeviceDto.getId());
+                    } else {
+                        tempStorageDeviceDto = storageDeviceService.getStorageDeviceById(storageDeviceNameId.get(storageDeviceDto.getName().toLowerCase()));
+                    }
+                    tempStorageDeviceList.add(tempStorageDeviceDto);
+                } else {
+                    tempStorageDeviceDto = storageDeviceService.getStorageDeviceById(storageDeviceDto.getId());
+                    tempStorageDeviceList.add(tempStorageDeviceDto);
+                }
+            });
+
+            tempComputerDto.setStorageDevices(tempStorageDeviceList);
+        } else {
+            tempComputerDto.setStorageDevices(storageDeviceMapping.toDtoList(existingComputer.getStorageDevices()));
+        }
+
+        checkProcessorAndMotherboardCompatibility(tempComputerDto.getProcessor(), tempComputerDto.getMotherboard());
+        checkMotherboardAndRamsCompatibility(tempComputerDto.getMotherboard(), tempComputerDto.getRams());
+        checkMotherboardAndStorageDevicesCompatibility(tempComputerDto.getMotherboard(), tempComputerDto.getStorageDevices());
+        checkVideoCardAndPowerSupplyCompatibility(tempComputerDto.getVideoCard(), tempComputerDto.getPowerSupply());
+
+        Computer updatedComputer = computerMapping.toEntity(tempComputerDto);
+        updatedComputer.setId(existingComputer.getId());
+        computerRepository.save(updatedComputer);
+
+        return computerMapping.toDto(updatedComputer);
+    }
+
+    // DELETE
+    @Transactional
+    public void deleteComputer(Long id) {
+        if (!computerRepository.existsById(id)) {
+            throw new EntityNotFoundException(
+                    String.format("Computer with id '%d' not found", id)
+            );
+        }
+        computerRepository.deleteById(id);
     }
 
     private void checkProcessorAndMotherboardCompatibility(ProcessorDto processorDto, MotherboardDto motherboardDto) {

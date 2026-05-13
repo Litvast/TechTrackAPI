@@ -2,11 +2,17 @@ package ru.litvast.techtrackapi.model.dto.equipment;
 
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
 public abstract class EquipmentDto {
+
+    @Getter
+    @Setter
+    @Positive(message = "ID cannot be negative or zero")
+    private Long id;
 
     private String type;
 
