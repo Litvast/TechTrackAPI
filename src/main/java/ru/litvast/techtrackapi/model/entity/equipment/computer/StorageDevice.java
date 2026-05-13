@@ -25,6 +25,7 @@ public class StorageDevice {
 
     private Integer capacityGb;
 
+    private String portType;
     private String connectionInterface;
     private String formFactor;
 

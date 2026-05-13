@@ -13,8 +13,10 @@ import ru.litvast.techtrackapi.model.entity.equipment.computer.GpuMemoryType;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class VideoCardDto {
 
+    @Positive(message = "ID cannot be negative or zero")
+    private Long id;
+
     @Size(message = "Name cannot be longer than 255 characters", max = 255)
-    @NotBlank(message = "Name is required")
     @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s.-/]+$",
             message = "Only Latin and Russian characters, numbers, spaces, dots, slashes and hyphens are allowed")
     private String name;
@@ -29,36 +31,36 @@ public class VideoCardDto {
             message = "Only Latin and Russian characters, numbers, spaces, dots, slashes and hyphens are allowed")
     private String architecture;
 
-    @NegativeOrZero(message = "Clock frequency cannot be negative or zero")
+    @Positive(message = "Clock frequency cannot be negative or zero")
     private Integer clockFrequencyMHz;
 
-    @NegativeOrZero(message = "Turbo clock frequency cannot be negative or zero")
+    @Positive(message = "Turbo clock frequency cannot be negative or zero")
     private Integer turboClockFrequencyMHz;
 
-    @NegativeOrZero(message = "Lithography cannot be negative or zero")
+    @Positive(message = "Lithography cannot be negative or zero")
     private Integer lithographyNm;
 
-    @NegativeOrZero(message = "Number of ALUs cannot be negative or zero")
+    @Positive(message = "Number of ALUs cannot be negative or zero")
     private Integer numberOfAlus;
 
-    @NegativeOrZero(message = "Number of TPUs cannot be negative or zero")
+    @Positive(message = "Number of TPUs cannot be negative or zero")
     private Integer numberOfTmus;
 
-    @NegativeOrZero(message = "Number of ROPs cannot be negative or zero")
+    @Positive(message = "Number of ROPs cannot be negative or zero")
     private Integer numberOfRops;
 
     private GpuMemoryType vramType;
 
-    @NegativeOrZero(message = "VRAM capacity cannot be negative or zero")
+    @Positive(message = "VRAM capacity cannot be negative or zero")
     private Integer vramCapacityMb;
 
-    @NegativeOrZero(message = "VRAM frequency cannot be negative or zero")
+    @Positive(message = "VRAM frequency cannot be negative or zero")
     private Integer vramFrequencyMHz;
 
-    @NegativeOrZero(message = "VRAM bus cannot be negative or zero")
+    @Positive(message = "VRAM bus cannot be negative or zero")
     private Integer vramBusBit;
 
-    @NegativeOrZero(message = "TDP cannot be negative or zero")
+    @Positive(message = "TDP cannot be negative or zero")
     private Integer tdpWatts;
 
     @Pattern(regexp = "^[0-9]\\.[0-9]$",
@@ -74,5 +76,17 @@ public class VideoCardDto {
     private boolean isTurboClockFrequencyValid() {
         if (clockFrequencyMHz == null || turboClockFrequencyMHz == null) return true;
         return turboClockFrequencyMHz >= clockFrequencyMHz;
+    }
+
+    @AssertTrue(message = "Either provide ID (to reference existing) OR name (to create new)")
+    private boolean isValidVideoCard() {
+        return (id == null) != (name == null);
+    }
+
+    @AssertTrue(message = "The name must be filled in")
+    private boolean isNameVideoCardNotBlank() {
+        if (name == null) return true;
+
+        return !name.isBlank();
     }
 }

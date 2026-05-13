@@ -17,12 +17,13 @@ import ru.litvast.techtrackapi.model.dto.user.UserCreateDto;
 import ru.litvast.techtrackapi.model.dto.user.UserCredentialsDto;
 import ru.litvast.techtrackapi.model.dto.user.UserNoPasswordDto;
 import ru.litvast.techtrackapi.model.dto.user.UserUpdateDto;
-import ru.litvast.techtrackapi.exception.NoUsersFoundException;
-import ru.litvast.techtrackapi.exception.UserNotFoundException;
+import ru.litvast.techtrackapi.exception.NoEntitiesFoundException;
+import ru.litvast.techtrackapi.exception.EntityNotFoundException;
 import ru.litvast.techtrackapi.model.entity.Role;
 import ru.litvast.techtrackapi.model.entity.User;
 import ru.litvast.techtrackapi.repository.UserRepository;
 import ru.litvast.techtrackapi.security.JwtService;
+import ru.litvast.techtrackapi.util.Converter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +75,8 @@ public class UserService {
 
         String username = jwtService.getUsernameFromJwtToken(refreshToken);
         User user = userRepository.findByUsernameIgnoreCase(username).orElseThrow(() ->
-            new UserNotFoundException(username)
+            new EntityNotFoundException(
+                    String.format("User with username '%s' not found", username))
         );
         String accessToken = jwtService.generateAccessToken(user.getUsername());
         return new JwtTokensDto(accessToken, refreshToken);
@@ -82,15 +84,6 @@ public class UserService {
 
     @Transactional
     public UserNoPasswordDto addUser(UserCreateDto userCreateDTO) {
-        if (userCreateDTO == null) {
-            throw new IllegalArgumentException("User data cannot be null");
-        }
-
-        if (userCreateDTO.getUsername() == null || userCreateDTO.getUsername().isBlank()
-                || userCreateDTO.getPassword() == null || userCreateDTO.getPassword().isBlank()) {
-            throw new IllegalArgumentException("No username or password entered");
-        }
-
         if (userRepository.existsByUsernameIgnoreCase(userCreateDTO.getUsername())) {
             throw new IllegalArgumentException(
                     String.format("Username '%s' is already taken", userCreateDTO.getUsername())
@@ -110,10 +103,11 @@ public class UserService {
 
     @Transactional
     public UserNoPasswordDto updateUser(String stringId, UserUpdateDto userUpdateDTO) {
-        int id = parseIdStringToInt(stringId);
+        int id = Converter.convertIdStringToInt(stringId);
 
         User user = userRepository.findById(id).orElseThrow(() ->
-                new UserNotFoundException(id)
+                new EntityNotFoundException(
+                        String.format("User with id '%d' not found", id))
         );
 
         if ((userUpdateDTO.getUsername() != null && !userUpdateDTO.getUsername().isBlank())
@@ -141,10 +135,11 @@ public class UserService {
     }
 
     public UserNoPasswordDto getUserById(String stringId) {
-        int id  = parseIdStringToInt(stringId);
+        int id = Converter.convertIdStringToInt(stringId);
 
         User user = userRepository.findById(id).orElseThrow(() ->
-                new UserNotFoundException(id)
+                new EntityNotFoundException(
+                        String.format("User with id '%d' not found", id))
         );
 
         return userMapping.userToUserNoPasswordDto(user);
@@ -152,7 +147,9 @@ public class UserService {
 
     public UserNoPasswordDto getUserByUsername(String username) {
         User user = userRepository.findByUsernameIgnoreCase(username).orElseThrow(() ->
-                new UserNotFoundException("User with this username not found"));
+                new EntityNotFoundException(
+                        String.format("User with username '%s' not found", username))
+        );
 
         return userMapping.userToUserNoPasswordDto(user);
     }
@@ -161,7 +158,7 @@ public class UserService {
         List<User> users = userRepository.findAll();
 
         if (users.isEmpty()) {
-            throw new NoUsersFoundException();
+            throw new NoEntitiesFoundException("No users found in database");
         }
 
         List<UserNoPasswordDto> usersWithoutPassword = new ArrayList<>(users.size());
@@ -171,26 +168,14 @@ public class UserService {
 
     @Transactional
     public void deleteUser(String stringId) {
-        int id = parseIdStringToInt(stringId);
+        int id = Converter.convertIdStringToInt(stringId);
 
         if (!userRepository.existsById(id)) {
-            throw new UserNotFoundException(id);
+            throw new EntityNotFoundException(
+                    String.format("User with id '%d' not found", id)
+            );
         }
 
         userRepository.deleteById(id);
-    }
-
-    private int parseIdStringToInt(String stringId) {
-        int id;
-        try {
-            id = Integer.parseInt(stringId);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("User's ID should be a number");
-        }
-
-        if (id <= 0) {
-            throw new IllegalArgumentException("User ID must be positive");
-        }
-        return id;
     }
 }

@@ -23,6 +23,6 @@ public class IoPortDto {
     private String version;
 
     @NotNull(message = "Count is required")
-    @NegativeOrZero(message = "Count cannot be negative or zero")
+    @Positive(message = "Count cannot be negative or zero")
     private Integer count;
 }

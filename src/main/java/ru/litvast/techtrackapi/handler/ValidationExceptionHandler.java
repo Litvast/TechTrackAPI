@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.litvast.techtrackapi.exception.EntityNotFoundException;
 import ru.litvast.techtrackapi.model.dto.ValidationError;
 
 import java.util.List;
@@ -25,6 +26,18 @@ public class ValidationExceptionHandler {
                 .toList();
 
         return ResponseEntity.badRequest().body(errors);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<?> onIllegalArgumentExceptionHandler(
+            IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<?> onEntityNotFoundException(
+            EntityNotFoundException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
 

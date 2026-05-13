@@ -1,10 +1,7 @@
 package ru.litvast.techtrackapi.model.dto.equipment.computer;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.validation.constraints.NegativeOrZero;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,8 +14,10 @@ import ru.litvast.techtrackapi.model.entity.equipment.computer.RamType;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RamDto {
 
+    @Positive(message = "ID cannot be negative or zero")
+    private Long id;
+
     @Size(message = "Name cannot be longer than 255 characters", max = 255)
-    @NotBlank(message = "Name is required")
     @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s.-/]+$",
             message = "Only Latin and Russian characters, numbers, spaces, dots, slashes and hyphens are allowed")
     private String name;
@@ -31,17 +30,17 @@ public class RamDto {
     private RamType type;
     private RamFormFactor formFactor;
 
-    @NegativeOrZero(message = "Capacity cannot be negative or zero")
+    @Positive(message = "Capacity cannot be negative or zero")
     private Integer capacityMb;
 
-    @NegativeOrZero(message = "Frequency cannot be negative or zero")
+    @Positive(message = "Frequency cannot be negative or zero")
     private Integer frequencyMHz;
 
     @Pattern(regexp = "^[0-9]{1,2}-[0-9]{1,2}-[0-9]{1,2}-[0-9]{1,2}",
             message = "Timings must be in format: XX-XX-XX-XX (each part 1-2 digits)")
     private String timings;
 
-    @NegativeOrZero(message = "Voltage cannot be negative or zero")
+    @Positive(message = "Voltage cannot be negative or zero")
     private Double voltage;
 
     private Boolean ecc;
@@ -50,4 +49,16 @@ public class RamDto {
     private Boolean expoSupport;
     private Boolean dualRank;
     private Boolean onDieEcc;
+
+    @AssertTrue(message = "Either provide ID (to reference existing) OR name (to create new)")
+    private boolean isValidMotherboard() {
+        return (id == null) != (name == null);
+    }
+
+    @AssertTrue(message = "The name must be filled in")
+    private boolean isNameRamNotBlank() {
+        if (name == null) return true;
+
+        return !name.isBlank();
+    }
 }

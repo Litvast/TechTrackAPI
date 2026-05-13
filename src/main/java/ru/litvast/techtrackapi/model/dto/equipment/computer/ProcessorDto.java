@@ -1,5 +1,6 @@
 package ru.litvast.techtrackapi.model.dto.equipment.computer;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
@@ -13,8 +14,10 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProcessorDto {
 
+    @Positive(message = "ID cannot be negative or zero")
+    private Long id;
+
     @Size(message = "Name cannot be longer than 255 characters", max = 255)
-    @NotBlank(message = "Name is required")
     @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s.-/]+$",
             message = "Only Latin and Russian characters, numbers, spaces, dots, slashes and hyphens are allowed")
     private String name;
@@ -24,31 +27,31 @@ public class ProcessorDto {
             message = "Only Latin and Russian characters, numbers, spaces, dots, slashes and hyphens are allowed")
     private String manufacturer;
 
-    @NegativeOrZero(message = "Clock frequency cannot be negative or zero")
+    @Positive(message = "Clock frequency cannot be negative or zero")
     private Double clockFrequencyGHz;
 
-    @NegativeOrZero(message = "Turbo clock frequency cannot be negative or zero")
+    @Positive(message = "Turbo clock frequency cannot be negative or zero")
     private Double turboClockFrequencyGHz;
 
-    @NegativeOrZero(message = "Number of cores cannot be negative or zero")
+    @Positive(message = "Number of cores cannot be negative or zero")
     private Integer numberOfCores;
 
-    @NegativeOrZero(message = "Number of threads cannot be negative or zero")
+    @Positive(message = "Number of threads cannot be negative or zero")
     private Integer numberOfThreads;
 
-    @NegativeOrZero(message = "L1 cache cannot be negative or zero")
+    @Positive(message = "L1 cache cannot be negative or zero")
     private Integer l1CacheKB;
 
-    @NegativeOrZero(message = "L2 cache cannot be negative or zero")
+    @Positive(message = "L2 cache cannot be negative or zero")
     private Integer l2CacheKB;
 
-    @NegativeOrZero(message = "L3 cache cannot be negative or zero")
+    @Positive(message = "L3 cache cannot be negative or zero")
     private Integer l3CacheMB;
 
-    @NegativeOrZero(message = "TDP cannot be negative or zero")
+    @Positive(message = "TDP cannot be negative or zero")
     private Integer tdpWatts;
 
-    @NegativeOrZero(message = "Lithography cannot be negative or zero")
+    @Positive(message = "Lithography cannot be negative or zero")
     private Integer lithographyNm;
 
     @Schema(description = "CPU architecture details")
@@ -77,5 +80,17 @@ public class ProcessorDto {
     private boolean isTurboClockValid() {
         if (clockFrequencyGHz == null || turboClockFrequencyGHz == null) return true;
         return turboClockFrequencyGHz >= clockFrequencyGHz;
+    }
+
+    @AssertTrue(message = "Either provide ID (to reference existing) OR name (to create new)")
+    private boolean isValidProcessor() {
+        return (id == null) != (name == null);
+    }
+
+    @AssertTrue(message = "The name must be filled in")
+    private boolean isNameProcessorNotBlank() {
+        if (name == null) return true;
+
+        return !name.isBlank();
     }
 }

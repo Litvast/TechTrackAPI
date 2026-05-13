@@ -27,7 +27,7 @@ public class StoragePortDto {
     private String formFactor;
 
     @NotNull(message = "Count is required")
-    @NegativeOrZero(message = "Count cannot be negative or zero")
+    @Positive(message = "Count cannot be negative or zero")
     private Integer count;
 
     @Size(message = "Connection interface cannot be longer than 10 characters", max = 10)
@@ -35,7 +35,7 @@ public class StoragePortDto {
             message = "Only Latin and Russian characters, numbers, spaces, dots, slashes and hyphens are allowed")
     private String connectionInterface;
 
-    @NegativeOrZero(message = "Lanes cannot be negative or zero")
+    @Positive(message = "Lanes cannot be negative or zero")
     private Integer lanes;
 
     @Size(message = "Max speed cannot be longer than 255 characters", max = 255)
@@ -44,5 +44,4 @@ public class StoragePortDto {
     private String maxSpeed;
 
     private Boolean shared;
-
 }

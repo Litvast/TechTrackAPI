@@ -1,8 +1,6 @@
 package ru.litvast.techtrackapi.model.dto.equipment.computer;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,8 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CpuSocketDto {
 
+    @Positive(message = "ID cannot be negative or zero")
+    private Long id;
+
     @Size(message = "Name cannot be longer than 255 characters", max = 255)
-    @NotBlank(message = "Name is required")
     @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s.-/]+$",
             message = "Only Latin and Russian characters, numbers, spaces, dots, slashes and hyphens are allowed")
     private String name;
@@ -27,4 +27,16 @@ public class CpuSocketDto {
     @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s.-/]+$",
             message = "Only Latin and Russian characters, numbers, spaces, dots, slashes and hyphens are allowed")
     private String compatibleCpus;
+
+    @AssertTrue(message = "Either provide ID (to reference existing) OR name (to create new)")
+    private boolean isValidCpuSocket() {
+        return (id == null) != (name == null);
+    }
+
+    @AssertTrue(message = "The name must be filled in")
+    private boolean isNameCpuSocketNotBlank() {
+        if (name == null) return true;
+
+        return !name.isBlank();
+    }
 }

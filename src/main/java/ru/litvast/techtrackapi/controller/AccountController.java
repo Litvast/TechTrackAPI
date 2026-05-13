@@ -17,8 +17,8 @@ import ru.litvast.techtrackapi.model.dto.user.UserCreateDto;
 import ru.litvast.techtrackapi.model.dto.user.UserCredentialsDto;
 import ru.litvast.techtrackapi.model.dto.user.UserNoPasswordDto;
 import ru.litvast.techtrackapi.model.dto.user.UserUpdateDto;
-import ru.litvast.techtrackapi.exception.NoUsersFoundException;
-import ru.litvast.techtrackapi.exception.UserNotFoundException;
+import ru.litvast.techtrackapi.exception.NoEntitiesFoundException;
+import ru.litvast.techtrackapi.exception.EntityNotFoundException;
 import ru.litvast.techtrackapi.service.UserService;
 
 @RequiredArgsConstructor
@@ -106,7 +106,7 @@ public class AccountController {
         try {
             UserNoPasswordDto userNoPasswordDTO = userService.updateUser(id, userUpdateDTO);
             return ResponseEntity.ok(userNoPasswordDTO);
-        } catch (UserNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -124,7 +124,7 @@ public class AccountController {
         try {
             UserNoPasswordDto userNoPasswordDTO = userService.getUserById(id);
             return ResponseEntity.ok(userNoPasswordDTO);
-        } catch (UserNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -141,7 +141,7 @@ public class AccountController {
     public ResponseEntity<?> getAllUsers() {
         try {
             return ResponseEntity.ok(userService.getAllUsers());
-        } catch (NoUsersFoundException e) {
+        } catch (NoEntitiesFoundException e) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
@@ -158,7 +158,7 @@ public class AccountController {
         try {
             userService.deleteUser(id);
             return ResponseEntity.ok("Successfully");
-        } catch (UserNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

@@ -26,7 +26,7 @@ public class Computer extends Equipment {
     @JoinColumn(name = "motherboard_id")
     private Motherboard motherboard;
 
-    @ElementCollection
+    @ManyToMany
     @CollectionTable(name = "computer_ram")
     private List<Ram> rams;
 
@@ -34,7 +34,7 @@ public class Computer extends Equipment {
     @JoinColumn(name = "video_card_id")
     private VideoCard videoCard;
 
-    @ElementCollection
+    @ManyToMany
     @CollectionTable(name = "computer_storage_device")
     private List<StorageDevice> storageDevices;
 

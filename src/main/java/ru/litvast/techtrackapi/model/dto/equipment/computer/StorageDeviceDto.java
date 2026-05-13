@@ -12,8 +12,10 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class StorageDeviceDto {
 
+    @Positive(message = "ID cannot be negative or zero")
+    private Long id;
+
     @Size(message = "Name cannot be longer than 255 characters", max = 255)
-    @NotBlank(message = "Name is required")
     @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s.-/]+$",
             message = "Only Latin and Russian characters, numbers, spaces, dots, slashes and hyphens are allowed")
     private String name;
@@ -23,8 +25,13 @@ public class StorageDeviceDto {
             message = "Only Latin and Russian characters, numbers, spaces, dots, slashes and hyphens are allowed")
     private String manufacturer;
 
-    @NegativeOrZero(message = "Capacity cannot be negative or zero")
+    @Positive(message = "Capacity cannot be negative or zero")
     private Integer capacityGb;
+
+    @Size(message = "Connection interface cannot be longer than 10 characters", max = 10)
+    @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s.-/]+$",
+            message = "Only Latin and Russian characters, numbers, spaces, dots, slashes and hyphens are allowed")
+    private String portType;
 
     @Size(message = "Connection interface cannot be longer than 10 characters", max = 10)
     @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s.-/]+$",
@@ -36,10 +43,10 @@ public class StorageDeviceDto {
             message = "Only Latin and Russian characters, numbers, spaces, dots, slashes and hyphens are allowed")
     private String formFactor;
 
-    @NegativeOrZero(message = "Read speed cannot be negative or zero")
+    @Positive(message = "Read speed cannot be negative or zero")
     private Integer readSpeedMbps;
 
-    @NegativeOrZero(message = "Write speed cannot be negative or zero")
+    @Positive(message = "Write speed cannot be negative or zero")
     private Integer writeSpeedMbps;
 
     // SSD
@@ -47,18 +54,30 @@ public class StorageDeviceDto {
             message = "Only Latin and Russian characters, numbers, spaces, dots, slashes and hyphens are allowed")
     private String nandType;
 
-    @NegativeOrZero(message = "TBW cannot be negative or zero")
+    @Positive(message = "TBW cannot be negative or zero")
     private Integer tbw;
 
     // HDD
-    @NegativeOrZero(message = "RPM cannot be negative or zero")
+    @Positive(message = "RPM cannot be negative or zero")
     private Integer rpm;
 
-    @NegativeOrZero(message = "Height cannot be negative or zero")
+    @Positive(message = "Height cannot be negative or zero")
     private Double heightMm;
 
     @AssertTrue(message = "Specify the parameters that are specific to only one type of storage device (SSD or HDD)")
     private boolean checkDriveMatchesSameType() {
         return (nandType == null && tbw == null) || (rpm == null && heightMm == null);
+    }
+
+    @AssertTrue(message = "Either provide ID (to reference existing) OR name (to create new)")
+    private boolean isValidStorageDevice() {
+        return (id == null) != (name == null);
+    }
+
+    @AssertTrue(message = "The name must be filled in")
+    private boolean isNameStorageDeviceNotBlank() {
+        if (name == null) return true;
+
+        return !name.isBlank();
     }
 }
