@@ -14,13 +14,13 @@ public class MotherboardFormFactorDto {
     private Long id;
 
     @Size(message = "Code cannot be longer than 10 characters", max = 10)
-    @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s.-/]+$",
-            message = "Only Latin and Russian characters, numbers, spaces, dots, slashes and hyphens are allowed")
+    @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s.\\-/'()]+$",
+         message = "Only Latin and Russian characters, numbers, spaces, dots, hyphens, slashes, apostrophes, brackets are allowed")
     private String code;
 
     @Size(message = "Name cannot be longer than 255 characters", max = 255)
-    @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s.-/]+$",
-            message = "Only Latin and Russian characters, numbers, spaces, dots, slashes and hyphens are allowed")
+    @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s.\\-/'()]+$",
+         message = "Only Latin and Russian characters, numbers, spaces, dots, hyphens, slashes, apostrophes, brackets are allowed")
     private String name;
 
     @Positive(message = "Width cannot be negative or zero")

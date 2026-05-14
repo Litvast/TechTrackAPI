@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Value;
 import ru.litvast.techtrackapi.model.entity.equipment.computer.RamFormFactor;
 import ru.litvast.techtrackapi.model.entity.equipment.computer.RamType;
 
