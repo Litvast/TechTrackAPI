@@ -5,6 +5,9 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -131,16 +134,35 @@ public class AccountController {
         }
     }
 
+    @Tag(name = "users", description = "Методы для работы с аккаунтами пользователями")
+    @Operation(
+            summary = "Поиск пользователя по никнейму (username)",
+            description = "В ответ выдаётся найденный объект User-а с полями id, username и role.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @GetMapping("/users/by-username/{username}")
+    public ResponseEntity<?> getUserByUsername(@PathVariable("username") String username) {
+        try {
+            UserNoPasswordDto userNoPasswordDTO = userService.getUserByUsername(username);
+            return ResponseEntity.ok(userNoPasswordDTO);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @Tag(name = "users", description = "Методы для работы с аккаунтами пользователей")
     @Operation(
             summary = "Вывод списка всех пользователей системы",
-            description = "В ответ выдаётся список объектов User-а с полями id, username и role.",
+            description = "В ответ выдаётся страница с объектами UserNoPasswordDto",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/users")
-    public ResponseEntity<?> getAllUsers() {
+    public ResponseEntity<?> getAllUsers(@PageableDefault(size = 20, sort = "username") Pageable pageable) {
         try {
-            return ResponseEntity.ok(userService.getAllUsers());
+            Page<UserNoPasswordDto> users = userService.getAllUsers(pageable);
+            return ResponseEntity.ok(users);
         } catch (NoEntitiesFoundException e) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

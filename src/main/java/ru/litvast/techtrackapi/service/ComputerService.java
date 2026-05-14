@@ -33,6 +33,7 @@ public class ComputerService {
     private final RamMapping ramMapping;
     private final StorageDeviceMapping storageDeviceMapping;
 
+    // CREATE
     @Transactional
     public ComputerDto addComputer(ComputerDto computerDto) {
 
@@ -102,6 +103,7 @@ public class ComputerService {
         checkMotherboardAndStorageDevicesCompatibility(computerDto.getMotherboard(), computerDto.getStorageDevices());
         checkVideoCardAndPowerSupplyCompatibility(computerDto.getVideoCard(), computerDto.getPowerSupply());
 
+        // Занесение объекта компьютера в БД
         Computer computer = computerMapping.toEntity(computerDto);
         computerRepository.save(computer);
         return computerMapping.toDto(computer);
@@ -143,6 +145,8 @@ public class ComputerService {
             }
         }
 
+        // Совмещение заполненных полей для обновления и не заполненных
+        // замещённых из сущности в БД в единый объект компьютера
         ComputerDto tempComputerDto = computerMapping.toDto(computerDto);
 
         if (tempComputerDto.getProcessor() != null) {
@@ -227,11 +231,13 @@ public class ComputerService {
             tempComputerDto.setStorageDevices(storageDeviceMapping.toDtoList(existingComputer.getStorageDevices()));
         }
 
+        // Проверка совместимости комплектующих на готовом объекте компьютера
         checkProcessorAndMotherboardCompatibility(tempComputerDto.getProcessor(), tempComputerDto.getMotherboard());
         checkMotherboardAndRamsCompatibility(tempComputerDto.getMotherboard(), tempComputerDto.getRams());
         checkMotherboardAndStorageDevicesCompatibility(tempComputerDto.getMotherboard(), tempComputerDto.getStorageDevices());
         checkVideoCardAndPowerSupplyCompatibility(tempComputerDto.getVideoCard(), tempComputerDto.getPowerSupply());
 
+        // Занесение обновлённого объекта компьютера в БД
         Computer updatedComputer = computerMapping.toEntity(tempComputerDto);
         updatedComputer.setId(existingComputer.getId());
         computerRepository.save(updatedComputer);

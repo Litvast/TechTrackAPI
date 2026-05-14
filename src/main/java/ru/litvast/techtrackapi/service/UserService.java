@@ -1,6 +1,8 @@
 package ru.litvast.techtrackapi.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,9 +26,6 @@ import ru.litvast.techtrackapi.model.entity.User;
 import ru.litvast.techtrackapi.repository.UserRepository;
 import ru.litvast.techtrackapi.security.JwtService;
 import ru.litvast.techtrackapi.util.Converter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -82,6 +81,7 @@ public class UserService {
         return new JwtTokensDto(accessToken, refreshToken);
     }
 
+    // CREATE
     @Transactional
     public UserNoPasswordDto addUser(UserCreateDto userCreateDTO) {
         if (userRepository.existsByUsernameIgnoreCase(userCreateDTO.getUsername())) {
@@ -101,6 +101,7 @@ public class UserService {
         return userMapping.userToUserNoPasswordDto(user);
     }
 
+    // UPDATE
     @Transactional
     public UserNoPasswordDto updateUser(String stringId, UserUpdateDto userUpdateDTO) {
         int id = Converter.convertIdStringToInt(stringId);
@@ -110,15 +111,14 @@ public class UserService {
                         String.format("User with id '%d' not found", id))
         );
 
-        if ((userUpdateDTO.getUsername() != null && !userUpdateDTO.getUsername().isBlank())
-                && !userUpdateDTO.getUsername().equalsIgnoreCase(user.getUsername())
-                && userRepository.existsByUsernameIgnoreCase(userUpdateDTO.getUsername())) {
+        boolean usernameFilled = userUpdateDTO.getUsername() != null && !userUpdateDTO.getUsername().isBlank();
+        if (usernameFilled && !userUpdateDTO.getUsername().equalsIgnoreCase(user.getUsername()) && userRepository.existsByUsernameIgnoreCase(userUpdateDTO.getUsername())) {
             throw new IllegalArgumentException(
                     String.format("Username '%s' is already taken", userUpdateDTO.getUsername())
             );
         }
 
-        user.setUsername(userUpdateDTO.getUsername() != null && !userUpdateDTO.getUsername().isBlank()
+        user.setUsername(usernameFilled
                 ? userUpdateDTO.getUsername()
                 : user.getUsername());
 
@@ -134,6 +134,7 @@ public class UserService {
         return userMapping.userToUserNoPasswordDto(user);
     }
 
+    // READ by id
     public UserNoPasswordDto getUserById(String stringId) {
         int id = Converter.convertIdStringToInt(stringId);
 
@@ -145,6 +146,7 @@ public class UserService {
         return userMapping.userToUserNoPasswordDto(user);
     }
 
+    // READ by username
     public UserNoPasswordDto getUserByUsername(String username) {
         User user = userRepository.findByUsernameIgnoreCase(username).orElseThrow(() ->
                 new EntityNotFoundException(
@@ -154,18 +156,16 @@ public class UserService {
         return userMapping.userToUserNoPasswordDto(user);
     }
 
-    public List<UserNoPasswordDto> getAllUsers() {
-        List<User> users = userRepository.findAll();
-
+    // READ all with pagination
+    public Page<UserNoPasswordDto> getAllUsers(Pageable pageable) {
+        Page<User> users = userRepository.findAll(pageable);
         if (users.isEmpty()) {
-            throw new NoEntitiesFoundException("No users found in database");
+            throw new NoEntitiesFoundException("No users found");
         }
-
-        List<UserNoPasswordDto> usersWithoutPassword = new ArrayList<>(users.size());
-        users.forEach(user -> usersWithoutPassword.add(userMapping.userToUserNoPasswordDto(user)));
-        return usersWithoutPassword;
+        return users.map(userMapping::userToUserNoPasswordDto);
     }
 
+    // DELETE
     @Transactional
     public void deleteUser(String stringId) {
         int id = Converter.convertIdStringToInt(stringId);
