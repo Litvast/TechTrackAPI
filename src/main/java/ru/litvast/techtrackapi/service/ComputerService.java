@@ -32,6 +32,7 @@ public class ComputerService {
     private final PowerSupplyMapping powerSupplyMapping;
     private final RamMapping ramMapping;
     private final StorageDeviceMapping storageDeviceMapping;
+    private final CpuSocketService cpuSocketService;
 
     // CREATE
     @Transactional
@@ -42,6 +43,16 @@ public class ComputerService {
             throw new IllegalArgumentException(
                     String.format("Computer '%s' is already taken", computerDto.getName())
             );
+        }
+
+        // Проверка идентичности имён сокета процессора и материнской платы при их создании
+        // для исправления ошибки создания двух одинаковых сокетов
+        if ((computerDto.getProcessor().getSocket() != null && computerDto.getMotherboard().getSocket() != null)
+                && computerDto.getProcessor().getSocket().getName().equalsIgnoreCase(computerDto.getMotherboard().getSocket().getName())) {
+            CpuSocketDto tempSocket = cpuSocketService.addCpuSocket(computerDto.getProcessor().getSocket());
+
+            computerDto.getProcessor().setSocket(tempSocket);
+            computerDto.getMotherboard().setSocket(tempSocket);
         }
 
         // Проверка, что если комплектующее указано по айди (существует в БД), то оно извлекается из БД и переносится в ДТО,
@@ -123,6 +134,15 @@ public class ComputerService {
         Computer computer = computerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Computer with id '%d' not found", id)
+                ));
+        return computerMapping.toDto(computer);
+    }
+
+    // READ by name
+    public ComputerDto getComputerByName(String name) {
+        Computer computer = computerRepository.findByNameIgnoreCase(name)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Computer with name '%s' not found", name)
                 ));
         return computerMapping.toDto(computer);
     }

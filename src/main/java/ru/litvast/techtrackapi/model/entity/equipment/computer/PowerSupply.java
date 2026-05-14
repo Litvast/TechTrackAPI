@@ -21,6 +21,7 @@ public class PowerSupply {
 
     @Column(unique = true, nullable = false)
     private String name;
+    private String manufacturer;
     private String description;
 
     private Integer powerWatts;

@@ -21,7 +21,7 @@ public class StorageDevice {
 
     @Column(unique = true, nullable = false)
     private String name;
-    private String manufacture;
+    private String manufacturer;
 
     private Integer capacityGb;
 

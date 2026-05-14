@@ -51,7 +51,7 @@ public class RamDto {
     private Boolean onDieEcc;
 
     @AssertTrue(message = "Either provide ID (to reference existing) OR name (to create new)")
-    private boolean isValidMotherboard() {
+    private boolean isValidRam() {
         return (id == null) != (name == null);
     }
 

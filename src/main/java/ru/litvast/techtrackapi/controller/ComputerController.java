@@ -12,8 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import ru.litvast.techtrackapi.exception.EntityNotFoundException;
-import ru.litvast.techtrackapi.exception.NoEntitiesFoundException;
 import ru.litvast.techtrackapi.model.dto.equipment.computer.ComputerDto;
 import ru.litvast.techtrackapi.model.dto.equipment.computer.ComputerUpdateDto;
 import ru.litvast.techtrackapi.service.ComputerService;
@@ -34,14 +32,8 @@ public class ComputerController {
     @PostMapping("/add")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> addComputer(@Valid @RequestBody ComputerDto computerDto) {
-        try {
-            ComputerDto created = computerService.addComputer(computerDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(created);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Computer creation failed");
-        }
+        ComputerDto created = computerService.addComputer(computerDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @Operation(
@@ -51,14 +43,8 @@ public class ComputerController {
     )
     @GetMapping
     public ResponseEntity<?> getAllComputers(@PageableDefault(size = 20, sort = "name") Pageable pageable) {
-        try {
-            Page<ComputerDto> computers = computerService.getAllComputers(pageable);
-            return ResponseEntity.ok(computers);
-        } catch (NoEntitiesFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Failed to fetch computers");
-        }
+        Page<ComputerDto> computers = computerService.getAllComputers(pageable);
+        return ResponseEntity.ok(computers);
     }
 
     @Operation(
@@ -68,16 +54,19 @@ public class ComputerController {
     )
     @GetMapping("/{id}")
     public ResponseEntity<?> getComputerById(@PathVariable Long id) {
-        try {
-            ComputerDto computer = computerService.getComputerById(id);
-            return ResponseEntity.ok(computer);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Failed to fetch computer");
-        }
+        ComputerDto computer = computerService.getComputerById(id);
+        return ResponseEntity.ok(computer);
+    }
+
+    @Operation(
+            summary = "Поиск компьютера по имени",
+            description = "В ответ выдаётся найденный объект ComputerDto.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @GetMapping("/by-name/{name}")
+    public ResponseEntity<?> getComputerByName(@PathVariable String name) {
+        ComputerDto computer = computerService.getComputerByName(name);
+        return ResponseEntity.ok(computer);
     }
 
     @Operation(
@@ -89,17 +78,10 @@ public class ComputerController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateComputer(@PathVariable Long id,
                                             @Valid @RequestBody ComputerUpdateDto computerDto) {
-        try {
-            computerDto.setId(id);
-            ComputerDto updated = computerService.updateComputer(computerDto);
-            return ResponseEntity.ok(updated);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Computer update failed");
-        }
+        computerDto.setId(id);
+        ComputerDto updated = computerService.updateComputer(computerDto);
+        return ResponseEntity.ok(updated);
+
     }
 
     @Operation(
@@ -110,15 +92,7 @@ public class ComputerController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteComputer(@PathVariable Long id) {
-        try {
-            computerService.deleteComputer(id);
-            return ResponseEntity.ok("Successfully");
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Computer deletion failed");
-        }
+        computerService.deleteComputer(id);
+        return ResponseEntity.ok("Successfully");
     }
 }
