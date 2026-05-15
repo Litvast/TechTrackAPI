@@ -11,7 +11,15 @@ import ru.litvast.techtrackapi.model.dto.EmployeeDto;
 import ru.litvast.techtrackapi.model.dto.EmployeeUpdateDto;
 import ru.litvast.techtrackapi.model.dto.mapping.EmployeeMapping;
 import ru.litvast.techtrackapi.model.entity.Employee;
+import ru.litvast.techtrackapi.model.entity.Room;
+import ru.litvast.techtrackapi.model.entity.User;
+import ru.litvast.techtrackapi.model.entity.equipment.computer.Computer;
+import ru.litvast.techtrackapi.model.entity.equipment.Printer;
 import ru.litvast.techtrackapi.repository.EmployeeRepository;
+import ru.litvast.techtrackapi.repository.RoomRepository;
+import ru.litvast.techtrackapi.repository.UserRepository;
+import ru.litvast.techtrackapi.repository.equipment.computer.ComputerRepository;
+import ru.litvast.techtrackapi.repository.equipment.PrinterRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +27,10 @@ public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final EmployeeMapping employeeMapping;
+    private final UserRepository userRepository;
+    private final RoomRepository roomRepository;
+    private final ComputerRepository computerRepository;
+    private final PrinterRepository printerRepository;
 
     // CREATE
     @Transactional
@@ -30,6 +42,39 @@ public class EmployeeService {
         validateAddEmployee(dto);
 
         Employee employee = employeeMapping.toEntity(dto);
+
+        if (dto.getUserId() != null) {
+            User user = userRepository.findById(dto.getUserId().intValue())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            String.format("User with id '%d' not found", dto.getUserId())
+                    ));
+            employee.setUser(user);
+        }
+
+        if (dto.getRoomId() != null) {
+            Room room = roomRepository.findById(dto.getRoomId())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            String.format("Room with id '%d' not found", dto.getRoomId())
+                    ));
+            employee.setRoom(room);
+        }
+
+        if (dto.getAssignedComputerId() != null) {
+            Computer computer = computerRepository.findById(dto.getAssignedComputerId())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            String.format("Computer with id '%d' not found", dto.getAssignedComputerId())
+                    ));
+            employee.setAssignedComputer(computer);
+        }
+
+        if (dto.getAssignedPrinterId() != null) {
+            Printer printer = printerRepository.findById(dto.getAssignedPrinterId())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            String.format("Printer with id '%d' not found", dto.getAssignedPrinterId())
+                    ));
+            employee.setAssignedPrinter(printer);
+        }
+
         employeeRepository.save(employee);
         return employeeMapping.toDto(employee);
     }
@@ -90,6 +135,38 @@ public class EmployeeService {
         if (dto.getPosition() != null) existingEmployee.setPosition(dto.getPosition());
         if (dto.getEmail() != null) existingEmployee.setEmail(dto.getEmail());
         if (dto.getPhone() != null) existingEmployee.setPhone(dto.getPhone());
+
+        if (dto.getUserId() != null) {
+            User user = userRepository.findById(dto.getUserId().intValue())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            String.format("User with id '%d' not found", dto.getUserId())
+                    ));
+            existingEmployee.setUser(user);
+        }
+
+        if (dto.getRoomId() != null) {
+            Room room = roomRepository.findById(dto.getRoomId())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            String.format("Room with id '%d' not found", dto.getRoomId())
+                    ));
+            existingEmployee.setRoom(room);
+        }
+
+        if (dto.getAssignedComputerId() != null) {
+            Computer computer = computerRepository.findById(dto.getAssignedComputerId())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            String.format("Computer with id '%d' not found", dto.getAssignedComputerId())
+                    ));
+            existingEmployee.setAssignedComputer(computer);
+        }
+
+        if (dto.getAssignedPrinterId() != null) {
+            Printer printer = printerRepository.findById(dto.getAssignedPrinterId())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            String.format("Printer with id '%d' not found", dto.getAssignedPrinterId())
+                    ));
+            existingEmployee.setAssignedPrinter(printer);
+        }
 
         employeeRepository.save(existingEmployee);
         return employeeMapping.toDto(existingEmployee);

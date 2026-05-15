@@ -1,9 +1,6 @@
 package ru.litvast.techtrackapi.model.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CompanyDto {
 
+    @Positive(message = "ID cannot be negative or zero")
     private Long id;
 
     @NotBlank(message = "Company name is required")

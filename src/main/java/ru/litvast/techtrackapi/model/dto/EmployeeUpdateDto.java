@@ -16,12 +16,12 @@ public class EmployeeUpdateDto {
     @Positive(message = "ID cannot be negative or zero")
     private Long id;
 
-    @Size(max = 255, message = "Full name cannot be longer than 255 characters")
+    @Size(message = "Full name cannot be longer than 255 characters", max = 255)
     @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s.\\-/'()]+$",
             message = "Only Latin and Russian characters, numbers, spaces, dots, hyphens, slashes, apostrophes, brackets are allowed")
     private String fullName;
 
-    @Size(max = 255, message = "Position cannot be longer than 255 characters")
+    @Size(message = "Position cannot be longer than 255 characters", max = 255)
     private String position;
 
     @Email(message = "Email should be valid")
@@ -30,15 +30,15 @@ public class EmployeeUpdateDto {
     @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Phone number must be valid")
     private String phone;
 
-    @Positive(message = "ID cannot be negative or zero")
+    @Positive(message = "User ID cannot be negative or zero")
     private Long userId;
 
-    @Positive(message = "ID cannot be negative or zero")
+    @Positive(message = "Room ID cannot be negative or zero")
     private Long roomId;
 
-    @Positive(message = "ID cannot be negative or zero")
+    @Positive(message = "Computer ID cannot be negative or zero")
     private Long assignedComputerId;
 
-    @Positive(message = "ID cannot be negative or zero")
+    @Positive(message = "Printer ID cannot be negative or zero")
     private Long assignedPrinterId;
 }
