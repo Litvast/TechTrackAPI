@@ -29,14 +29,12 @@ public class RoomService {
             throw new IllegalArgumentException("To create a room, you must specify a name, not an ID");
         }
 
-        // Проверка уникальности имени
         if (roomRepository.existsByNameIgnoreCase(dto.getName())) {
             throw new IllegalArgumentException(
                     String.format("Room '%s' is already taken", dto.getName())
             );
         }
 
-        // Проверка существования этажа
         BuildingFloor buildingFloor = buildingFloorRepository.findById(dto.getBuildingFloorId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Building floor with id '%d' not found", dto.getBuildingFloorId())
@@ -57,7 +55,6 @@ public class RoomService {
     }
 
     public Page<RoomDto> getRoomsByBuildingFloorId(Long buildingFloorId, Pageable pageable) {
-        // Проверка существования этажа
         if (!buildingFloorRepository.existsById(buildingFloorId)) {
             throw new EntityNotFoundException(
                     String.format("Building floor with id '%d' not found", buildingFloorId)
@@ -106,7 +103,6 @@ public class RoomService {
         if (dto.getDescription() != null) existingRoom.setDescription(dto.getDescription());
         if (dto.getRoomNumber() != null) existingRoom.setRoomNumber(dto.getRoomNumber());
 
-        // Проверка существования этажа (если изменился)
         if (dto.getBuildingFloorId() != null) {
             BuildingFloor buildingFloor = buildingFloorRepository.findById(dto.getBuildingFloorId())
                     .orElseThrow(() -> new EntityNotFoundException(

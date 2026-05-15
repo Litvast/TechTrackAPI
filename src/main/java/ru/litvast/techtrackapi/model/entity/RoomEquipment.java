@@ -7,28 +7,26 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.litvast.techtrackapi.model.entity.equipment.Equipment;
 
-import java.util.List;
-
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "room_equipment")
 public class RoomEquipment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
     private Long id;
 
     @Column(nullable = false)
     private Integer quantity;
 
     @ManyToOne
-    @JoinColumn(name = "room_id")
+    @JoinColumn(name = "room_id", nullable = false)
     private Room room;
 
     @ManyToOne
-    @JoinColumn(name = "equipment_id")
-    private List<Equipment> equipment;
+    @JoinColumn(name = "equipment_id", nullable = false)
+    private Equipment equipment;
 }

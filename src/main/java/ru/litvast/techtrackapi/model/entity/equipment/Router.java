@@ -15,6 +15,8 @@ import lombok.Setter;
 @Table(name = "routers")
 public class Router extends Equipment {
 
+    private String model;
+
     private Integer wanBandwidth;
     private Integer lanBandwidth;
 
@@ -27,4 +29,8 @@ public class Router extends Equipment {
 
     @Enumerated(EnumType.STRING)
     private RouterSecurityStandard securityStandard;
+
+    private Boolean isWiFi6;
+    private Boolean isMesh;
+    private Integer antennaGain;
 }

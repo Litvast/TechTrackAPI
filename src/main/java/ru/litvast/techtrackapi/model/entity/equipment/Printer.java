@@ -19,10 +19,19 @@ public class Printer extends Equipment {
     private PrintType printType;
 
     private Boolean isColor;
+
     private Double speed;
 
     private Integer widthResolution;
     private Integer heightResolution;
 
     private String consumption;
+
+    private String model;
+
+    private Boolean isDuplex;
+
+    private Boolean isNetwork;
+
+    private String paperSize;
 }
