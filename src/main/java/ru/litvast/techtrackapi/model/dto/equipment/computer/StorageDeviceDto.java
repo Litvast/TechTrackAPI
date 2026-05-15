@@ -65,7 +65,7 @@ public class StorageDeviceDto {
     private Double heightMm;
 
     @AssertTrue(message = "Specify the parameters that are specific to only one type of storage device (SSD or HDD)")
-    private boolean checkDriveMatchesSameType() {
+    private boolean isDriveMatchesSameType() {
         return (nandType == null && tbw == null) || (rpm == null && heightMm == null);
     }
 

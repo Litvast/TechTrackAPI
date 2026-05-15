@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.litvast.techtrackapi.model.entity.equipment.Equipment;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -28,5 +30,5 @@ public class RoomEquipment {
 
     @ManyToOne
     @JoinColumn(name = "equipment_id")
-    private Equipment equipment;
+    private List<Equipment> equipment;
 }
