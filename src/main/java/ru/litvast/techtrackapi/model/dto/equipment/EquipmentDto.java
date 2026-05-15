@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import ru.litvast.techtrackapi.model.entity.equipment.EquipmentStatus;
 
 public abstract class EquipmentDto {
 
@@ -41,6 +42,10 @@ public abstract class EquipmentDto {
     private Boolean isTypeValid() {
         return "COMPUTER".equals(type) || "PRINTER".equals(type) || "ROUTER".equals(type);
     }
+
+    @Getter
+    @Setter
+    private EquipmentStatus status;
 
     @AssertTrue(message = "Either provide ID (to reference existing) OR name (to create new)")
     private boolean isValidEquipment() {

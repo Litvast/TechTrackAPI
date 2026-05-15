@@ -10,6 +10,7 @@ import ru.litvast.techtrackapi.exception.NoEntitiesFoundException;
 import ru.litvast.techtrackapi.model.dto.equipment.RouterDto;
 import ru.litvast.techtrackapi.model.dto.equipment.RouterUpdateDto;
 import ru.litvast.techtrackapi.model.dto.mapping.equipment.RouterMapping;
+import ru.litvast.techtrackapi.model.entity.equipment.EquipmentStatus;
 import ru.litvast.techtrackapi.model.entity.equipment.Router;
 import ru.litvast.techtrackapi.repository.equipment.RouterRepository;
 
@@ -27,6 +28,10 @@ public class RouterService {
         }
 
         validateAddRouter(dto);
+
+        if (dto.getStatus() == null) {
+            dto.setStatus(EquipmentStatus.IN_STOCK);
+        }
 
         Router router = routerMapping.toEntity(dto);
         routerRepository.save(router);

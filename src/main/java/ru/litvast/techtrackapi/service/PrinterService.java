@@ -10,6 +10,7 @@ import ru.litvast.techtrackapi.exception.NoEntitiesFoundException;
 import ru.litvast.techtrackapi.model.dto.equipment.PrinterDto;
 import ru.litvast.techtrackapi.model.dto.equipment.PrinterUpdateDto;
 import ru.litvast.techtrackapi.model.dto.mapping.equipment.PrinterMapping;
+import ru.litvast.techtrackapi.model.entity.equipment.EquipmentStatus;
 import ru.litvast.techtrackapi.model.entity.equipment.Printer;
 import ru.litvast.techtrackapi.repository.equipment.PrinterRepository;
 
@@ -27,6 +28,10 @@ public class PrinterService {
         }
 
         validateAddPrinter(dto);
+
+        if (dto.getStatus() == null) {
+            dto.setStatus(EquipmentStatus.IN_STOCK);
+        }
 
         Printer printer = printerMapping.toEntity(dto);
         printerRepository.save(printer);

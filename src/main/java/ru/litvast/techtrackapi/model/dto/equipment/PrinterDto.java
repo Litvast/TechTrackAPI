@@ -6,13 +6,15 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import ru.litvast.techtrackapi.model.entity.equipment.PrintType;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PrinterDto {
+@EqualsAndHashCode(callSuper = true)
+public class PrinterDto extends EquipmentDto {
 
     @Positive(message = "ID cannot be negative or zero")
     private Long id;

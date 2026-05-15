@@ -32,6 +32,9 @@ public abstract class Equipment {
     @Column(name = "inventory_number", unique = true)
     private String inventoryNumber;
 
+    @Enumerated(EnumType.STRING)
+    private EquipmentStatus status;
+
     @Column(name = "purchase_date")
     private LocalDateTime purchaseDate;
 

@@ -9,6 +9,7 @@ import ru.litvast.techtrackapi.exception.EntityNotFoundException;
 import ru.litvast.techtrackapi.exception.NoEntitiesFoundException;
 import ru.litvast.techtrackapi.model.dto.equipment.computer.*;
 import ru.litvast.techtrackapi.model.dto.mapping.equipment.computer.*;
+import ru.litvast.techtrackapi.model.entity.equipment.EquipmentStatus;
 import ru.litvast.techtrackapi.model.entity.equipment.computer.Computer;
 import ru.litvast.techtrackapi.repository.equipment.computer.ComputerRepository;
 
@@ -114,6 +115,10 @@ public class ComputerService {
         checkMotherboardAndStorageDevicesCompatibility(computerDto.getMotherboard(), computerDto.getStorageDevices());
         checkVideoCardAndPowerSupplyCompatibility(computerDto.getVideoCard(), computerDto.getPowerSupply());
 
+        if (computerDto.getStatus() == null) {
+            computerDto.setStatus(EquipmentStatus.IN_STOCK);
+        }
+        
         // Занесение объекта компьютера в БД
         Computer computer = computerMapping.toEntity(computerDto);
         computerRepository.save(computer);
