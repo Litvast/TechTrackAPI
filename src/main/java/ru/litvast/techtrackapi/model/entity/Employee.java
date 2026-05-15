@@ -44,4 +44,8 @@ public class Employee {
     @OneToOne
     @JoinColumn(name = "assigned_printer_id")
     private Printer assignedPrinter;
+
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    private Company company;
 }
