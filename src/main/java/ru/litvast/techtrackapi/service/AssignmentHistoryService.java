@@ -1,6 +1,7 @@
 package ru.litvast.techtrackapi.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import ru.litvast.techtrackapi.repository.equipment.EquipmentRepository;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AssignmentHistoryService {
@@ -30,20 +32,31 @@ public class AssignmentHistoryService {
     private final EmployeeRepository employeeRepository;
     private final AssignmentHistoryMapping assignmentHistoryMapping;
 
-    // CREATE (выдать оборудование сотруднику)
     @Transactional
     public AssignmentHistoryDto assignEquipment(CreateAssignmentDto dto) {
+        log.info("=== НАЧАЛО: Выдача оборудования ===");
+        log.info("Оборудование ID: {}, Сотрудник ID: {}", dto.getEquipmentId(), dto.getEmployeeId());
+
         Equipment equipment = equipmentRepository.findById(dto.getEquipmentId())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format("Equipment with id '%d' not found", dto.getEquipmentId())
-                ));
+                .orElseThrow(() -> {
+                    log.error("Оборудование с ID {} не найдено", dto.getEquipmentId());
+                    return new EntityNotFoundException(
+                            String.format("Equipment with id '%d' not found", dto.getEquipmentId())
+                    );
+                });
 
         Employee employee = employeeRepository.findById(dto.getEmployeeId())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format("Employee with id '%d' not found", dto.getEmployeeId())
-                ));
+                .orElseThrow(() -> {
+                    log.error("Сотрудник с ID {} не найден", dto.getEmployeeId());
+                    return new EntityNotFoundException(
+                            String.format("Employee with id '%d' not found", dto.getEmployeeId())
+                    );
+                });
+
+        log.info("Оборудование: {}, Сотрудник: {}", equipment.getName(), employee.getFullName());
 
         if (assignmentHistoryRepository.findByEquipmentIdAndReturnedAtIsNull(dto.getEquipmentId()).isPresent()) {
+            log.warn("Оборудование ID {} уже выдано другому сотруднику", dto.getEquipmentId());
             throw new IllegalArgumentException(
                     String.format("Equipment with id '%d' is already assigned to someone", dto.getEquipmentId())
             );
@@ -51,32 +64,45 @@ public class AssignmentHistoryService {
 
         equipment.setStatus(EquipmentStatus.ASSIGNED);
         equipmentRepository.save(equipment);
+        log.info("Статус оборудования изменён на ASSIGNED");
 
         AssignmentHistory history = assignmentHistoryMapping.toEntity(dto);
         history.setEquipment(equipment);
         history.setEmployee(employee);
         history.setAssignedAt(LocalDateTime.now());
         assignmentHistoryRepository.save(history);
+
+        log.info("Запись о выдаче создана. ID записи: {}", history.getId());
+        log.info("=== УСПЕШНО: Оборудование выдано ===");
+
         return assignmentHistoryMapping.toDto(history);
     }
 
-    // RETURN (вернуть оборудование)
     @Transactional
     public AssignmentHistoryDto returnEquipment(ReturnEquipmentDto dto) {
+        log.info("=== НАЧАЛО: Возврат оборудования ===");
+        log.info("ID записи: {}", dto.getId());
+
         AssignmentHistory history = assignmentHistoryRepository.findById(dto.getId())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format("Assignment record with id '%d' not found", dto.getId())
-                ));
+                .orElseThrow(() -> {
+                    log.error("Запись о выдаче с ID {} не найдена", dto.getId());
+                    return new EntityNotFoundException(
+                            String.format("Assignment record with id '%d' not found", dto.getId())
+                    );
+                });
 
         if (history.getReturnedAt() != null) {
+            log.warn("Оборудование уже возвращено ранее. Дата возврата: {}", history.getReturnedAt());
             throw new IllegalArgumentException("Equipment already returned");
         }
 
         history.setReturnedAt(LocalDateTime.now());
         if (dto.getCondition() != null) {
             history.setCondition(dto.getCondition());
+            log.info("Состояние оборудования: {}", dto.getCondition());
         }
         assignmentHistoryRepository.save(history);
+        log.info("Дата возврата установлена: {}", history.getReturnedAt());
 
         boolean hasActiveAssignments = assignmentHistoryRepository
                 .findByEquipmentIdAndReturnedAtIsNull(history.getEquipment().getId())
@@ -85,23 +111,31 @@ public class AssignmentHistoryService {
         if (!hasActiveAssignments) {
             history.getEquipment().setStatus(EquipmentStatus.IN_STOCK);
             equipmentRepository.save(history.getEquipment());
+            log.info("Статус оборудования изменён на IN_STOCK (нет активных выдач)");
+        } else {
+            log.info("Статус оборудования остаётся ASSIGNED (есть другие активные выдачи)");
         }
 
+        log.info("=== УСПЕШНО: Оборудование возвращено ===");
         return assignmentHistoryMapping.toDto(history);
     }
 
-    // READ all with pagination
     public Page<AssignmentHistoryDto> getAllAssignments(Pageable pageable) {
+        log.debug("Запрос всех записей истории с пагинацией");
         Page<AssignmentHistory> histories = assignmentHistoryRepository.findAll(pageable);
         if (histories.isEmpty()) {
+            log.warn("Записи истории не найдены");
             throw new NoEntitiesFoundException("No assignment records found");
         }
+        log.debug("Найдено {} записей", histories.getTotalElements());
         return histories.map(assignmentHistoryMapping::toDto);
     }
 
-    // READ by equipment id
     public Page<AssignmentHistoryDto> getAssignmentsByEquipmentId(Long equipmentId, Pageable pageable) {
+        log.debug("Поиск истории по оборудованию ID: {}", equipmentId);
+
         if (!equipmentRepository.existsById(equipmentId)) {
+            log.error("Оборудование с ID {} не найдено", equipmentId);
             throw new EntityNotFoundException(
                     String.format("Equipment with id '%d' not found", equipmentId)
             );
@@ -109,14 +143,18 @@ public class AssignmentHistoryService {
 
         Page<AssignmentHistory> histories = assignmentHistoryRepository.findByEquipmentId(equipmentId, pageable);
         if (histories.isEmpty()) {
+            log.warn("История для оборудования ID {} не найдена", equipmentId);
             throw new NoEntitiesFoundException("No assignment records found for this equipment");
         }
+        log.debug("Найдено {} записей для оборудования ID {}", histories.getTotalElements(), equipmentId);
         return histories.map(assignmentHistoryMapping::toDto);
     }
 
-    // READ by employee id
     public Page<AssignmentHistoryDto> getAssignmentsByEmployeeId(Long employeeId, Pageable pageable) {
+        log.debug("Поиск истории по сотруднику ID: {}", employeeId);
+
         if (!employeeRepository.existsById(employeeId)) {
+            log.error("Сотрудник с ID {} не найден", employeeId);
             throw new EntityNotFoundException(
                     String.format("Employee with id '%d' not found", employeeId)
             );
@@ -124,26 +162,36 @@ public class AssignmentHistoryService {
 
         Page<AssignmentHistory> histories = assignmentHistoryRepository.findByEmployeeId(employeeId, pageable);
         if (histories.isEmpty()) {
+            log.warn("История для сотрудника ID {} не найдена", employeeId);
             throw new NoEntitiesFoundException("No assignment records found for this employee");
         }
+        log.debug("Найдено {} записей для сотрудника ID {}", histories.getTotalElements(), employeeId);
         return histories.map(assignmentHistoryMapping::toDto);
     }
 
-    // READ by id
     public AssignmentHistoryDto getAssignmentById(Long id) {
+        log.debug("Поиск записи истории по ID: {}", id);
+
         AssignmentHistory history = assignmentHistoryRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format("Assignment record with id '%d' not found", id)
-                ));
+                .orElseThrow(() -> {
+                    log.error("Запись истории с ID {} не найдена", id);
+                    return new EntityNotFoundException(
+                            String.format("Assignment record with id '%d' not found", id)
+                    );
+                });
         return assignmentHistoryMapping.toDto(history);
     }
 
-    // READ current assignment by equipment id
     public AssignmentHistoryDto getCurrentAssignmentByEquipmentId(Long equipmentId) {
+        log.debug("Поиск активной выдачи по оборудованию ID: {}", equipmentId);
+
         AssignmentHistory history = assignmentHistoryRepository.findByEquipmentIdAndReturnedAtIsNull(equipmentId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format("No active assignment found for equipment with id '%d'", equipmentId)
-                ));
+                .orElseThrow(() -> {
+                    log.warn("Активная выдача для оборудования ID {} не найдена", equipmentId);
+                    return new EntityNotFoundException(
+                            String.format("No active assignment found for equipment with id '%d'", equipmentId)
+                    );
+                });
         return assignmentHistoryMapping.toDto(history);
     }
 }
