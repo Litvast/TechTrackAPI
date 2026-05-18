@@ -353,35 +353,125 @@ public class ComputerService {
         log.info("=== УСПЕШНО: Компьютер удалён ===");
     }
 
-    // Проверки совместимости (с логированием)
     private void checkProcessorAndMotherboardCompatibility(ProcessorDto processorDto, MotherboardDto motherboardDto) {
         if ((processorDto.getSocket() != null && motherboardDto.getSocket() != null)
                 && !motherboardDto.getSocket().equals(processorDto.getSocket())) {
-            log.error("Несовместимость сокетов: процессор {}, материнская плата {}",
-                    processorDto.getSocket().getName(), motherboardDto.getSocket().getName());
             throw new IllegalArgumentException("Motherboard and processor sockets are incompatible");
         }
-        log.debug("Проверка сокетов пройдена");
     }
 
     private void checkMotherboardAndRamsCompatibility(MotherboardDto motherboardDto, List<RamDto> ramDtoList) {
-        // ... существующая логика с добавлением log.debug/warn/error
-        log.debug("Проверка совместимости RAM с материнской платой...");
-        // (существующий код проверки)
+        if (motherboardDto.getMemorySupports() == null) return;
+
+        Map<MemorySupportDto, ArrayList<RamDto>> memoryCheckList = new HashMap<>();
+        motherboardDto.getMemorySupports().forEach(memorySupportDto ->
+                memoryCheckList.put(memorySupportDto, new ArrayList<>(memorySupportDto.getNumberOfSlots())));
+
+        for (RamDto ramDto : ramDtoList) {
+            if (ramDto.getType() == null || ramDto.getFormFactor() == null) continue;
+
+            boolean compatible = false;
+
+            for (MemorySupportDto memorySupportDto : motherboardDto.getMemorySupports()) {
+                if (!memorySupportDto.getType().equals(ramDto.getType())) continue;
+                if (!memorySupportDto.getFormFactor().equals(ramDto.getFormFactor())) continue;
+
+                if (ramDto.getEcc() != null) {
+                    if (ramDto.getEcc() && !Boolean.TRUE.equals(memorySupportDto.getEccSupported())) {
+                        throw new IllegalArgumentException("ECC RAM is not supported by this motherboard");
+                    }
+                    if (!ramDto.getEcc() && !Boolean.TRUE.equals(memorySupportDto.getNonEccSupported())) {
+                        throw new IllegalArgumentException("Non-ECC RAM is not supported by this motherboard");
+                    }
+                }
+
+                memoryCheckList.get(memorySupportDto).add(ramDto);
+                compatible = true;
+                break;
+            }
+
+            if (!compatible) {
+                throw new IllegalArgumentException(
+                        String.format("RAM '%s' is not compatible with this motherboard", ramDto.getName())
+                );
+            }
+        }
+
+        for (MemorySupportDto memorySupportDto : motherboardDto.getMemorySupports()) {
+            if (memorySupportDto.getNumberOfSlots() < memoryCheckList.get(memorySupportDto).size()) {
+                throw new IllegalArgumentException(
+                        String.format("Amount of RAM '%d' with the type '%s' and form factor '%s' is greater than the number of motherboard slots '%d'",
+                                memoryCheckList.get(memorySupportDto).size(),
+                                memorySupportDto.getType(),
+                                memorySupportDto.getFormFactor(),
+                                memorySupportDto.getNumberOfSlots())
+                );
+            }
+
+            long sumRamVolumes = memoryCheckList.get(memorySupportDto).stream()
+                    .mapToLong(RamDto::getCapacityMb)
+                    .sum() / 1024;
+
+            if (memorySupportDto.getMaxMemoryGb() < sumRamVolumes) {
+                throw new IllegalArgumentException(
+                        String.format("The amount of RAM memory '%d' GB with type '%s' and form factor '%s' is greater than the supported amount on the motherboard '%d' GB",
+                                sumRamVolumes,
+                                memorySupportDto.getType(),
+                                memorySupportDto.getFormFactor(),
+                                memorySupportDto.getMaxMemoryGb())
+                );
+            }
+        }
     }
 
     private void checkMotherboardAndStorageDevicesCompatibility(MotherboardDto motherboardDto, List<StorageDeviceDto> storageDeviceDtoList) {
-        log.debug("Проверка совместимости накопителей с материнской платой...");
-        // (существующий код проверки)
+        if (motherboardDto.getStoragePorts() == null) return;
+
+        Map<StoragePortDto, ArrayList<StorageDeviceDto>> storageCheckList = new HashMap<>();
+        motherboardDto.getStoragePorts().forEach(storagePortDto ->
+                storageCheckList.put(storagePortDto, new ArrayList<>(storageDeviceDtoList.size())));
+
+        for (StorageDeviceDto storageDto : storageDeviceDtoList) {
+            if (storageDto.getConnectionInterface() == null || storageDto.getPortType() == null || storageDto.getFormFactor() == null) continue;
+
+            boolean compatible = false;
+
+            for (StoragePortDto storagePortDto : motherboardDto.getStoragePorts()) {
+                if (!storagePortDto.getConnectionInterface().equalsIgnoreCase(storageDto.getConnectionInterface())) continue;
+                if (!storagePortDto.getPortType().equalsIgnoreCase(storageDto.getPortType())) continue;
+                if (!storagePortDto.getFormFactor().equalsIgnoreCase(storageDto.getFormFactor())) continue;
+
+                storageCheckList.get(storagePortDto).add(storageDto);
+                compatible = true;
+                break;
+            }
+
+            if (!compatible) {
+                throw new IllegalArgumentException(
+                        String.format("Storage '%s' is not compatible with this motherboard", storageDto.getName())
+                );
+            }
+        }
+
+        for (StoragePortDto storagePortDto : motherboardDto.getStoragePorts()) {
+            if (storagePortDto.getCount() < storageCheckList.get(storagePortDto).size()) {
+                throw new IllegalArgumentException(
+                        String.format("The number of drives '%d' with connection type '%s', connection interface '%s', and form factor '%s' is greater than the number of motherboard slots '%d'",
+                                storageCheckList.get(storagePortDto).size(),
+                                storagePortDto.getPortType(),
+                                storagePortDto.getConnectionInterface(),
+                                storagePortDto.getFormFactor(),
+                                storagePortDto.getCount())
+                );
+            }
+        }
     }
 
     private void checkVideoCardAndPowerSupplyCompatibility(VideoCardDto videoCardDto, PowerSupplyDto powerSupplyDto) {
-        if (videoCardDto.getTdpWatts() != null && powerSupplyDto.getPowerWatts() != null
-                && videoCardDto.getTdpWatts() > powerSupplyDto.getPowerWatts() * 0.7) {
-            log.error("Несовместимость: видеокарта {} Вт, блок питания {} Вт",
-                    videoCardDto.getTdpWatts(), powerSupplyDto.getPowerWatts());
+        if (videoCardDto.getTdpWatts() == null || powerSupplyDto.getPowerWatts() == null) return;
+
+        if (videoCardDto.getTdpWatts() > powerSupplyDto.getPowerWatts() * 0.7) {
             throw new IllegalArgumentException("The video card's power should not exceed 70 percent of the power supply's capacity.");
         }
-        log.debug("Проверка совместимости видеокарты и блока питания пройдена");
     }
 }
