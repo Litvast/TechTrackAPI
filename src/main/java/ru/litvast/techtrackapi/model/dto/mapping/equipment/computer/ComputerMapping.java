@@ -10,6 +10,7 @@ public interface ComputerMapping {
     ComputerDto toDto(Computer computer);
     ComputerDto toDto(ComputerUpdateDto computerUpdateDto);
     ComputerUpdateDto toUpdateDto(Computer computer);
+    ComputerUpdateDto toUpdateDto(ComputerDto computerDto);
     Computer toEntity(ComputerDto computerDto);
     Computer toEntity(ComputerUpdateDto computerUpdateDto);
 }

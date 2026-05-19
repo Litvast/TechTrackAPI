@@ -1,8 +1,6 @@
 package ru.litvast.techtrackapi.model.dto.equipment.computer;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import ru.litvast.techtrackapi.model.dto.equipment.EquipmentDto;
 
