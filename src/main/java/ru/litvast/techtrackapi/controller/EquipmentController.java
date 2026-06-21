@@ -18,8 +18,8 @@ public class EquipmentController {
     private final EquipmentService equipmentService;
 
     @Operation(
-            summary = "Подсчёт количества оборудования по определённому статусу",
-            description = "В ответ выдаётся подсчитанное количество оборудования.",
+            summary = "Подсчёт количества оборудования по статусу",
+            description = "Возвращает общее количество единиц оборудования, имеющих указанный статус. Статус передаётся в пути запроса и должен соответствовать значению из перечисления EquipmentStatus. Требует наличия валидного access-токена.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/count/by-status/{status}")

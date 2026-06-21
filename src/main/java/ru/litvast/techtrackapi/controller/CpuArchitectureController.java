@@ -24,19 +24,8 @@ public class CpuArchitectureController {
     private final CpuArchitectureService cpuArchitectureService;
 
     @Operation(
-            summary = "Получение всех архитектур процессоров с пагинацией",
-            description = "В ответ выдаётся страница с объектами CpuArchitectureDto.",
-            security = @SecurityRequirement(name = "bearerAuth")
-    )
-    @GetMapping
-    public ResponseEntity<?> getAllCpuArchitectures(@PageableDefault(size = 20, sort = "name") Pageable pageable) {
-        Page<CpuArchitectureDto> cpuArchitectures = cpuArchitectureService.getAllCpuArchitectures(pageable);
-        return ResponseEntity.ok(cpuArchitectures);
-    }
-
-    @Operation(
             summary = "Добавление новой архитектуры (ADMIN)",
-            description = "В ответ выдаётся созданный объект CpuArchitectureDto.",
+            description = "Создаёт новую архитектуру процессора. Доступно только для администраторов. Возвращает созданный объект CpuArchitectureDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PostMapping("/add")
@@ -47,8 +36,19 @@ public class CpuArchitectureController {
     }
 
     @Operation(
+            summary = "Получение всех архитектур процессоров с пагинацией",
+            description = "Возвращает страницу со списком всех архитектур процессоров с поддержкой пагинации и сортировки по названию.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @GetMapping
+    public ResponseEntity<?> getAllCpuArchitectures(@PageableDefault(size = 20, sort = "name") Pageable pageable) {
+        Page<CpuArchitectureDto> cpuArchitectures = cpuArchitectureService.getAllCpuArchitectures(pageable);
+        return ResponseEntity.ok(cpuArchitectures);
+    }
+
+    @Operation(
             summary = "Обновление архитектуры по id (ADMIN)",
-            description = "В ответ выдаётся обновлённый объект CpuArchitectureDto.",
+            description = "Обновляет данные существующей архитектуры процессора по её id. Доступно только для администраторов. Возвращает обновлённый объект CpuArchitectureDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PutMapping("/{id}")
@@ -60,13 +60,13 @@ public class CpuArchitectureController {
 
     @Operation(
             summary = "Удаление архитектуры по id (ADMIN)",
-            description = "В ответ выдаётся сообщение об успешном удалении.",
+            description = "Удаляет архитектуру процессора по её id. Доступно только для администраторов. Возвращает сообщение об успешном удалении.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteCpuArchitecture(@PathVariable Long id) {
         cpuArchitectureService.deleteCpuArchitecture(id);
-        return ResponseEntity.ok("Successfully");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

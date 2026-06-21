@@ -26,6 +26,7 @@ public class BuildingFloorController {
 
     @Operation(
             summary = "Добавление этажа (ADMIN)",
+            description = "Создаёт новый этаж в указанном здании. Возвращает созданный объект BuildingFloorDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PostMapping("/add")
@@ -37,6 +38,7 @@ public class BuildingFloorController {
 
     @Operation(
             summary = "Получение всех этажей с пагинацией",
+            description = "Возвращает страницу со списком всех этажей с поддержкой пагинации и сортировки по номеру этажа.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping
@@ -47,6 +49,7 @@ public class BuildingFloorController {
 
     @Operation(
             summary = "Получение этажей по зданию",
+            description = "Возвращает страницу этажей, принадлежащих указанному зданию. Поддерживает пагинацию.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/by-building/{buildingId}")
@@ -58,6 +61,7 @@ public class BuildingFloorController {
 
     @Operation(
             summary = "Поиск этажа по id",
+            description = "Возвращает этаж по его идентификатору.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/{id}")
@@ -68,6 +72,7 @@ public class BuildingFloorController {
 
     @Operation(
             summary = "Поиск этажа по номеру и зданию",
+            description = "Возвращает этаж по его номеру и идентификатору здания (уникальная пара).",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/by-number/{floorNumber}/building/{buildingId}")
@@ -79,7 +84,7 @@ public class BuildingFloorController {
 
     @Operation(
             summary = "Подсчёт общего количества этажей",
-            description = "В ответ выдаётся подсчитанное количество этажей",
+            description = "Возвращает общее количество этажей в системе.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/count")
@@ -90,6 +95,7 @@ public class BuildingFloorController {
 
     @Operation(
             summary = "Обновление этажа (ADMIN)",
+            description = "Обновляет данные существующего этажа по его id. Возвращает обновлённый объект BuildingFloorDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PutMapping("/{id}")
@@ -102,12 +108,13 @@ public class BuildingFloorController {
 
     @Operation(
             summary = "Удаление этажа (ADMIN)",
+            description = "Удаляет этаж по его id. Возвращает сообщение об успешном удалении.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteBuildingFloor(@PathVariable Long id) {
         buildingFloorService.deleteBuildingFloor(id);
-        return ResponseEntity.ok("Successfully");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

@@ -25,7 +25,7 @@ public class ProcessorController {
 
     @Operation(
             summary = "Добавление процессора (ADMIN)",
-            description = "В ответ выдаётся созданный объект ProcessorDto.",
+            description = "Создаёт новый процессор с указанными характеристиками. Доступно только для администраторов. Возвращает созданный объект ProcessorDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PostMapping("/add")
@@ -37,7 +37,7 @@ public class ProcessorController {
 
     @Operation(
             summary = "Получение всех процессоров с пагинацией",
-            description = "В ответ выдаётся страница с объектами ProcessorDto.",
+            description = "Возвращает страницу со списком всех процессоров с поддержкой пагинации и сортировки по названию.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping
@@ -48,7 +48,7 @@ public class ProcessorController {
 
     @Operation(
             summary = "Поиск процессора по id",
-            description = "В ответ выдаётся найденный объект ProcessorDto.",
+            description = "Возвращает процессор по его идентификатору.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/{id}")
@@ -58,8 +58,8 @@ public class ProcessorController {
     }
 
     @Operation(
-            summary = "Поиск процессора по имени",
-            description = "В ответ выдаётся найденный объект ProcessorDto.",
+            summary = "Поиск процессора по названию",
+            description = "Возвращает процессор по его названию (регистронезависимый поиск).",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/by-name/{name}")
@@ -69,8 +69,8 @@ public class ProcessorController {
     }
 
     @Operation(
-            summary = "Обновление процессора по id (ADMIN)",
-            description = "В ответ выдаётся обновлённый объект ProcessorDto.",
+            summary = "Обновление процессора (ADMIN)",
+            description = "Обновляет данные существующего процессора по его id. Доступно только для администраторов. Возвращает обновлённый объект ProcessorDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PutMapping("/{id}")
@@ -82,14 +82,14 @@ public class ProcessorController {
     }
 
     @Operation(
-            summary = "Удаление процессора по id (ADMIN)",
-            description = "В ответ выдаётся сообщение об успешном удалении.",
+            summary = "Удаление процессора (ADMIN)",
+            description = "Удаляет процессор по его id. Доступно только для администраторов. Возвращает сообщение об успешном удалении.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteProcessor(@PathVariable Long id) {
         processorService.deleteProcessor(id);
-        return ResponseEntity.ok("Successfully");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

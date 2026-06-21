@@ -26,6 +26,7 @@ public class PrinterController {
 
     @Operation(
             summary = "Добавление принтера (ADMIN)",
+            description = "Создаёт новый принтер с указанными параметрами. Доступно только для администраторов. Возвращает созданный объект PrinterDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PostMapping("/add")
@@ -37,6 +38,7 @@ public class PrinterController {
 
     @Operation(
             summary = "Получение всех принтеров с пагинацией",
+            description = "Возвращает страницу со списком всех принтеров с поддержкой пагинации и сортировки по названию.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping
@@ -47,6 +49,7 @@ public class PrinterController {
 
     @Operation(
             summary = "Поиск принтера по id",
+            description = "Возвращает принтер по его идентификатору.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/{id}")
@@ -56,7 +59,8 @@ public class PrinterController {
     }
 
     @Operation(
-            summary = "Поиск принтера по имени",
+            summary = "Поиск принтера по названию",
+            description = "Возвращает принтер по его названию (регистронезависимый поиск).",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/by-name/{name}")
@@ -67,6 +71,7 @@ public class PrinterController {
 
     @Operation(
             summary = "Поиск принтера по инвентарному номеру",
+            description = "Возвращает принтер по его уникальному инвентарному номеру.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/by-inventory/{inventoryNumber}")
@@ -77,7 +82,7 @@ public class PrinterController {
 
     @Operation(
             summary = "Подсчёт общего количества принтеров",
-            description = "В ответ выдаётся подсчитанное количество принтеров.",
+            description = "Возвращает общее количество принтеров в системе.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/count")
@@ -88,6 +93,7 @@ public class PrinterController {
 
     @Operation(
             summary = "Обновление принтера (ADMIN)",
+            description = "Обновляет данные существующего принтера по его id. Доступно только для администраторов. Возвращает обновлённый объект PrinterDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PutMapping("/{id}")
@@ -100,12 +106,13 @@ public class PrinterController {
 
     @Operation(
             summary = "Удаление принтера (ADMIN)",
+            description = "Удаляет принтер по его id. Доступно только для администраторов. Возвращает сообщение об успешном удалении.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deletePrinter(@PathVariable Long id) {
         printerService.deletePrinter(id);
-        return ResponseEntity.ok("Successfully");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

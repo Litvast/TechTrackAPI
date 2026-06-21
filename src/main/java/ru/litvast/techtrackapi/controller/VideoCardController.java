@@ -25,7 +25,7 @@ public class VideoCardController {
 
     @Operation(
             summary = "Добавление видеокарты (ADMIN)",
-            description = "В ответ выдаётся созданный объект VideoCardDto.",
+            description = "Создаёт новую видеокарту с указанными характеристиками. Доступно только для администраторов. Возвращает созданный объект VideoCardDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PostMapping("/add")
@@ -37,7 +37,7 @@ public class VideoCardController {
 
     @Operation(
             summary = "Получение всех видеокарт с пагинацией",
-            description = "В ответ выдаётся страница с объектами VideoCardDto.",
+            description = "Возвращает страницу со списком всех видеокарт с поддержкой пагинации и сортировки по названию.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping
@@ -48,7 +48,7 @@ public class VideoCardController {
 
     @Operation(
             summary = "Поиск видеокарты по id",
-            description = "В ответ выдаётся найденный объект VideoCardDto.",
+            description = "Возвращает видеокарту по её идентификатору.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/{id}")
@@ -58,8 +58,8 @@ public class VideoCardController {
     }
 
     @Operation(
-            summary = "Поиск видеокарты по имени",
-            description = "В ответ выдаётся найденный объект VideoCardDto.",
+            summary = "Поиск видеокарты по названию",
+            description = "Возвращает видеокарту по её названию (регистронезависимый поиск).",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/by-name/{name}")
@@ -69,8 +69,8 @@ public class VideoCardController {
     }
 
     @Operation(
-            summary = "Обновление видеокарты по id (ADMIN)",
-            description = "В ответ выдаётся обновлённый объект VideoCardDto.",
+            summary = "Обновление видеокарты (ADMIN)",
+            description = "Обновляет данные существующей видеокарты по её id. Доступно только для администраторов. Возвращает обновлённый объект VideoCardDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PutMapping("/{id}")
@@ -82,14 +82,14 @@ public class VideoCardController {
     }
 
     @Operation(
-            summary = "Удаление видеокарты по id (ADMIN)",
-            description = "В ответ выдаётся сообщение об успешном удалении.",
+            summary = "Удаление видеокарты (ADMIN)",
+            description = "Удаляет видеокарту по её id. Доступно только для администраторов. Возвращает сообщение об успешном удалении.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteVideoCard(@PathVariable Long id) {
         videoCardService.deleteVideoCard(id);
-        return ResponseEntity.ok("Successfully");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

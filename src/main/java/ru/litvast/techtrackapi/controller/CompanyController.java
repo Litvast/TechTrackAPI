@@ -26,6 +26,7 @@ public class CompanyController {
 
     @Operation(
             summary = "Добавление компании (ADMIN)",
+            description = "Создаёт новую компанию с указанными данными. Доступно только для администраторов. Возвращает созданный объект CompanyDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PostMapping("/add")
@@ -37,6 +38,7 @@ public class CompanyController {
 
     @Operation(
             summary = "Получение всех компаний с пагинацией",
+            description = "Возвращает страницу со списком всех компаний с поддержкой пагинации и сортировки по названию.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping
@@ -47,6 +49,7 @@ public class CompanyController {
 
     @Operation(
             summary = "Поиск компании по id",
+            description = "Возвращает компанию по её идентификатору.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/{id}")
@@ -57,6 +60,7 @@ public class CompanyController {
 
     @Operation(
             summary = "Поиск компании по названию",
+            description = "Возвращает компанию по её названию (регистронезависимый поиск).",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/by-name/{name}")
@@ -67,6 +71,7 @@ public class CompanyController {
 
     @Operation(
             summary = "Поиск компании по ИНН",
+            description = "Возвращает компанию по её ИНН (уникальное поле).",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/by-inn/{inn}")
@@ -76,7 +81,8 @@ public class CompanyController {
     }
 
     @Operation(
-            summary = "Поиск компании по айди кабинета",
+            summary = "Поиск компании по ID комнаты",
+            description = "Возвращает компанию, к которой относится указанная комната (по связям через здания и этажи).",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/by-room-id/{roomId}")
@@ -87,7 +93,7 @@ public class CompanyController {
 
     @Operation(
             summary = "Подсчёт общего количества компаний",
-            description = "В ответ выдаётся подсчитанное количество компаний",
+            description = "Возвращает общее количество компаний в системе.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/count")
@@ -98,6 +104,7 @@ public class CompanyController {
 
     @Operation(
             summary = "Обновление компании (ADMIN)",
+            description = "Обновляет данные существующей компании по её id. Доступно только для администраторов. Возвращает обновлённый объект CompanyDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PutMapping("/{id}")
@@ -110,12 +117,13 @@ public class CompanyController {
 
     @Operation(
             summary = "Удаление компании (ADMIN)",
+            description = "Удаляет компанию по её id. Доступно только для администраторов. Возвращает сообщение об успешном удалении.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteCompany(@PathVariable Long id) {
         companyService.deleteCompany(id);
-        return ResponseEntity.ok("Successfully");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

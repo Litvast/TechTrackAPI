@@ -25,7 +25,7 @@ public class MotherboardController {
 
     @Operation(
             summary = "Добавление материнской платы (ADMIN)",
-            description = "В ответ выдаётся созданный объект MotherboardDto.",
+            description = "Создаёт новую материнскую плату с указанными параметрами. Доступно только для администраторов. Возвращает созданный объект MotherboardDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PostMapping("/add")
@@ -37,7 +37,7 @@ public class MotherboardController {
 
     @Operation(
             summary = "Получение всех материнских плат с пагинацией",
-            description = "В ответ выдаётся страница с объектами MotherboardDto.",
+            description = "Возвращает страницу со списком всех материнских плат с поддержкой пагинации и сортировки по названию.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping
@@ -48,7 +48,7 @@ public class MotherboardController {
 
     @Operation(
             summary = "Поиск материнской платы по id",
-            description = "В ответ выдаётся найденный объект MotherboardDto.",
+            description = "Возвращает материнскую плату по её идентификатору.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/{id}")
@@ -58,8 +58,8 @@ public class MotherboardController {
     }
 
     @Operation(
-            summary = "Поиск материнской платы по имени",
-            description = "В ответ выдаётся найденный объект MotherboardDto.",
+            summary = "Поиск материнской платы по названию",
+            description = "Возвращает материнскую плату по её названию (регистронезависимый поиск).",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/by-name/{name}")
@@ -69,8 +69,8 @@ public class MotherboardController {
     }
 
     @Operation(
-            summary = "Обновление материнской платы по id (ADMIN)",
-            description = "В ответ выдаётся обновлённый объект MotherboardDto.",
+            summary = "Обновление материнской платы (ADMIN)",
+            description = "Обновляет данные существующей материнской платы по её id. Доступно только для администраторов. Возвращает обновлённый объект MotherboardDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PutMapping("/{id}")
@@ -82,14 +82,14 @@ public class MotherboardController {
     }
 
     @Operation(
-            summary = "Удаление материнской платы по id (ADMIN)",
-            description = "В ответ выдаётся сообщение об успешном удалении.",
+            summary = "Удаление материнской платы (ADMIN)",
+            description = "Удаляет материнскую плату по её id. Доступно только для администраторов. Возвращает сообщение об успешном удалении.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteMotherboard(@PathVariable Long id) {
         motherboardService.deleteMotherboard(id);
-        return ResponseEntity.ok("Successfully");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

@@ -26,7 +26,7 @@ public class EmployeeController {
 
     @Operation(
             summary = "Добавление сотрудника (ADMIN)",
-            description = "В ответ выдаётся созданный объект EmployeeDto.",
+            description = "Создаёт нового сотрудника с указанными данными. Доступно только для администраторов. Возвращает созданный объект EmployeeDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PostMapping("/add")
@@ -38,7 +38,7 @@ public class EmployeeController {
 
     @Operation(
             summary = "Получение всех сотрудников с пагинацией",
-            description = "В ответ выдаётся страница с объектами EmployeeDto.",
+            description = "Возвращает страницу со списком всех сотрудников с поддержкой пагинации и сортировки по полному имени.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping
@@ -49,7 +49,7 @@ public class EmployeeController {
 
     @Operation(
             summary = "Поиск сотрудника по id",
-            description = "В ответ выдаётся найденный объект EmployeeDto.",
+            description = "Возвращает сотрудника по его идентификатору.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/{id}")
@@ -60,7 +60,7 @@ public class EmployeeController {
 
     @Operation(
             summary = "Поиск сотрудника по ФИО",
-            description = "В ответ выдаётся найденный объект EmployeeDto.",
+            description = "Возвращает сотрудника по его полному имени (регистронезависимый поиск).",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/by-name/{fullName}")
@@ -71,7 +71,7 @@ public class EmployeeController {
 
     @Operation(
             summary = "Поиск сотрудника по email",
-            description = "В ответ выдаётся найденный объект EmployeeDto.",
+            description = "Возвращает сотрудника по его электронной почте (уникальное поле).",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/by-email/{email}")
@@ -81,8 +81,8 @@ public class EmployeeController {
     }
 
     @Operation(
-            summary = "Поиск сотрудника по юзернейму пользователя",
-            description = "В ответ выдаётся найденный объект EmployeeDto.",
+            summary = "Поиск сотрудника по имени пользователя",
+            description = "Возвращает сотрудника, привязанного к указанному имени пользователя (username).",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/by-user-username/{userUsername}")
@@ -93,7 +93,7 @@ public class EmployeeController {
 
     @Operation(
             summary = "Подсчёт общего количества сотрудников",
-            description = "В ответ выдаётся подсчитанное количество сотрудников.",
+            description = "Возвращает общее количество сотрудников в системе.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/count")
@@ -103,8 +103,8 @@ public class EmployeeController {
     }
 
     @Operation(
-            summary = "Подсчёт количества сотрудников по айди компании",
-            description = "В ответ выдаётся подсчитанное количество сотрудников.",
+            summary = "Подсчёт количества сотрудников по компании",
+            description = "Возвращает количество сотрудников, принадлежащих указанной компании.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/count/by-company-id/{companyId}")
@@ -114,8 +114,8 @@ public class EmployeeController {
     }
 
     @Operation(
-            summary = "Обновление сотрудника по id (ADMIN)",
-            description = "В ответ выдаётся обновлённый объект EmployeeDto.",
+            summary = "Обновление сотрудника (ADMIN)",
+            description = "Обновляет данные существующего сотрудника по его id. Доступно только для администраторов. Возвращает обновлённый объект EmployeeDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PutMapping("/{id}")
@@ -127,14 +127,14 @@ public class EmployeeController {
     }
 
     @Operation(
-            summary = "Удаление сотрудника по id (ADMIN)",
-            description = "В ответ выдаётся сообщение об успешном удалении.",
+            summary = "Удаление сотрудника (ADMIN)",
+            description = "Удаляет сотрудника по его id. Доступно только для администраторов. Возвращает сообщение об успешном удалении.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteEmployee(@PathVariable Long id) {
         employeeService.deleteEmployee(id);
-        return ResponseEntity.ok("Successfully");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

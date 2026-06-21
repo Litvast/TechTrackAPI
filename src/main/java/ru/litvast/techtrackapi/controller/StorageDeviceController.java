@@ -26,8 +26,8 @@ public class StorageDeviceController {
     private final StorageDeviceService storageDeviceService;
 
     @Operation(
-            summary = "Добавление накопителя (ADMIN)",
-            description = "В ответ выдаётся созданный объект StorageDeviceDto.",
+            summary = "Добавление одного накопителя (ADMIN)",
+            description = "Создаёт новый накопитель с указанными характеристиками. Доступно только для администраторов. Возвращает созданный объект StorageDeviceDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PostMapping("/add")
@@ -39,7 +39,7 @@ public class StorageDeviceController {
 
     @Operation(
             summary = "Добавление нескольких накопителей (ADMIN)",
-            description = "В ответ выдаётся список созданных объектов StorageDeviceDto.",
+            description = "Создаёт несколько накопителей за один запрос. Принимает список DTO. Доступно только для администраторов. Возвращает список созданных объектов StorageDeviceDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PostMapping("/add-list")
@@ -51,7 +51,7 @@ public class StorageDeviceController {
 
     @Operation(
             summary = "Получение всех накопителей с пагинацией",
-            description = "В ответ выдаётся страница с объектами StorageDeviceDto.",
+            description = "Возвращает страницу со списком всех накопителей с поддержкой пагинации и сортировки по названию.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping
@@ -62,7 +62,7 @@ public class StorageDeviceController {
 
     @Operation(
             summary = "Поиск накопителя по id",
-            description = "В ответ выдаётся найденный объект StorageDeviceDto.",
+            description = "Возвращает накопитель по его идентификатору.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/{id}")
@@ -72,8 +72,8 @@ public class StorageDeviceController {
     }
 
     @Operation(
-            summary = "Поиск накопителя по имени",
-            description = "В ответ выдаётся найденный объект StorageDeviceDto.",
+            summary = "Поиск накопителя по названию",
+            description = "Возвращает накопитель по его названию (регистронезависимый поиск).",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/by-name/{name}")
@@ -83,8 +83,8 @@ public class StorageDeviceController {
     }
 
     @Operation(
-            summary = "Обновление накопителя по id (ADMIN)",
-            description = "В ответ выдаётся обновлённый объект StorageDeviceDto.",
+            summary = "Обновление накопителя (ADMIN)",
+            description = "Обновляет данные существующего накопителя по его id. Доступно только для администраторов. Возвращает обновлённый объект StorageDeviceDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PutMapping("/{id}")
@@ -96,14 +96,14 @@ public class StorageDeviceController {
     }
 
     @Operation(
-            summary = "Удаление накопителя по id (ADMIN)",
-            description = "В ответ выдаётся сообщение об успешном удалении.",
+            summary = "Удаление накопителя (ADMIN)",
+            description = "Удаляет накопитель по его id. Доступно только для администраторов. Возвращает сообщение об успешном удалении.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteStorageDevice(@PathVariable Long id) {
         storageDeviceService.deleteStorageDevice(id);
-        return ResponseEntity.ok("Successfully");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

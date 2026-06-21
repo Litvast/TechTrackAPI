@@ -26,7 +26,7 @@ public class ComputerController {
 
     @Operation(
             summary = "Добавление компьютера (ADMIN)",
-            description = "В ответ выдаётся созданный объект ComputerDto.",
+            description = "Создаёт новый компьютер с указанными параметрами и комплектующими. Доступно только для администраторов. Возвращает созданный объект ComputerDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PostMapping("/add")
@@ -38,7 +38,7 @@ public class ComputerController {
 
     @Operation(
             summary = "Получение всех компьютеров с пагинацией",
-            description = "В ответ выдаётся страница с объектами ComputerDto.",
+            description = "Возвращает страницу со списком всех компьютеров с поддержкой пагинации и сортировки по названию.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping
@@ -49,7 +49,7 @@ public class ComputerController {
 
     @Operation(
             summary = "Поиск компьютера по id",
-            description = "В ответ выдаётся найденный объект ComputerDto.",
+            description = "Возвращает компьютер по его идентификатору.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/{id}")
@@ -59,8 +59,8 @@ public class ComputerController {
     }
 
     @Operation(
-            summary = "Поиск компьютера по имени",
-            description = "В ответ выдаётся найденный объект ComputerDto.",
+            summary = "Поиск компьютера по названию",
+            description = "Возвращает компьютер по его названию (регистронезависимый поиск).",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/by-name/{name}")
@@ -71,7 +71,7 @@ public class ComputerController {
 
     @Operation(
             summary = "Подсчёт общего количества компьютеров",
-            description = "В ответ выдаётся подсчитанное количество компьютеров.",
+            description = "Возвращает общее количество компьютеров в системе.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/count")
@@ -82,7 +82,7 @@ public class ComputerController {
 
     @Operation(
             summary = "Обновление компьютера по id (ADMIN)",
-            description = "В ответ выдаётся обновлённый объект ComputerDto.",
+            description = "Обновляет данные существующего компьютера по его id. Доступно только для администраторов. Возвращает обновлённый объект ComputerDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PutMapping("/{id}")
@@ -92,18 +92,17 @@ public class ComputerController {
         computerDto.setId(id);
         ComputerDto updated = computerService.updateComputer(computerDto);
         return ResponseEntity.ok(updated);
-
     }
 
     @Operation(
             summary = "Удаление компьютера по id (ADMIN)",
-            description = "В ответ выдаётся сообщение об успешном удалении.",
+            description = "Удаляет компьютер по его id. Доступно только для администраторов. Возвращает сообщение об успешном удалении.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteComputer(@PathVariable Long id) {
         computerService.deleteComputer(id);
-        return ResponseEntity.ok("Successfully");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

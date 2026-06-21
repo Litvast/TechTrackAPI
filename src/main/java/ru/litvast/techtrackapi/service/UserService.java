@@ -40,7 +40,7 @@ public class UserService {
     private final JwtService jwtService;
 
     @Transactional
-    public void signup(UserCredentialsDto userCredentialsDTO) {
+    public UserNoPasswordDto signup(UserCredentialsDto userCredentialsDTO) {
         log.info("=== НАЧАЛО: Регистрация пользователя ===");
         log.info("Username: {}", userCredentialsDTO.getUsername());
 
@@ -52,10 +52,12 @@ public class UserService {
         User user = userMapping.userCredentialsDtoToUser(userCredentialsDTO);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(Role.ROLE_USER);
-        userRepository.save(user);
+        UserNoPasswordDto userDto = userMapping.userToUserNoPasswordDto(userRepository.save(user));
 
         log.info("Пользователь зарегистрирован. ID: {}", user.getId());
         log.info("=== УСПЕШНО: Регистрация завершена ===");
+
+        return userDto;
     }
 
     public JwtTokensDto signin(UserCredentialsDto userCredentialsDTO) throws AuthenticationException {

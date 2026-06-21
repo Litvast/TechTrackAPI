@@ -26,6 +26,7 @@ public class BuildingController {
 
     @Operation(
             summary = "Добавление здания (ADMIN)",
+            description = "Создаёт новое здание и возвращает его DTO.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PostMapping("/add")
@@ -37,6 +38,7 @@ public class BuildingController {
 
     @Operation(
             summary = "Получение всех зданий с пагинацией",
+            description = "Возвращает страницу со списком зданий.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping
@@ -47,6 +49,7 @@ public class BuildingController {
 
     @Operation(
             summary = "Получение зданий по компании",
+            description = "Возвращает страницу зданий, принадлежащих указанной компании.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/by-company/{companyId}")
@@ -58,6 +61,7 @@ public class BuildingController {
 
     @Operation(
             summary = "Поиск здания по id",
+            description = "Возвращает здание по его идентификатору.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/{id}")
@@ -68,6 +72,7 @@ public class BuildingController {
 
     @Operation(
             summary = "Поиск здания по названию",
+            description = "Возвращает здание по его названию (регистронезависимо).",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/by-name/{name}")
@@ -78,7 +83,7 @@ public class BuildingController {
 
     @Operation(
             summary = "Подсчёт общего количества зданий",
-            description = "В ответ выдаётся подсчитанное количество зданий",
+            description = "Возвращает общее количество зданий в системе.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/count")
@@ -89,6 +94,7 @@ public class BuildingController {
 
     @Operation(
             summary = "Обновление здания (ADMIN)",
+            description = "Обновляет данные существующего здания по его id и возвращает обновлённый DTO.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PutMapping("/{id}")
@@ -101,12 +107,13 @@ public class BuildingController {
 
     @Operation(
             summary = "Удаление здания (ADMIN)",
+            description = "Удаляет здание по его id. Возвращает сообщение об успехе.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteBuilding(@PathVariable Long id) {
         buildingService.deleteBuilding(id);
-        return ResponseEntity.ok("Successfully");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

@@ -26,6 +26,7 @@ public class RoomController {
 
     @Operation(
             summary = "Добавление комнаты (ADMIN)",
+            description = "Создаёт новую комнату с указанными параметрами. Доступно только для администраторов. Возвращает созданный объект RoomDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PostMapping("/add")
@@ -37,6 +38,7 @@ public class RoomController {
 
     @Operation(
             summary = "Получение всех комнат с пагинацией",
+            description = "Возвращает страницу со списком всех комнат с поддержкой пагинации и сортировки по названию.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping
@@ -47,6 +49,7 @@ public class RoomController {
 
     @Operation(
             summary = "Получение комнат по этажу",
+            description = "Возвращает страницу комнат, принадлежащих указанному этажу. Поддерживает пагинацию.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/by-floor/{buildingFloorId}")
@@ -58,6 +61,7 @@ public class RoomController {
 
     @Operation(
             summary = "Поиск комнаты по id",
+            description = "Возвращает комнату по её идентификатору.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/{id}")
@@ -68,6 +72,7 @@ public class RoomController {
 
     @Operation(
             summary = "Поиск комнаты по названию",
+            description = "Возвращает комнату по её названию (регистронезависимый поиск).",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/by-name/{name}")
@@ -78,7 +83,7 @@ public class RoomController {
 
     @Operation(
             summary = "Подсчёт общего количества комнат",
-            description = "В ответ выдаётся подсчитанное количество комнат",
+            description = "Возвращает общее количество комнат в системе.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/count")
@@ -89,6 +94,7 @@ public class RoomController {
 
     @Operation(
             summary = "Обновление комнаты (ADMIN)",
+            description = "Обновляет данные существующей комнаты по её id. Доступно только для администраторов. Возвращает обновлённый объект RoomDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PutMapping("/{id}")
@@ -101,12 +107,13 @@ public class RoomController {
 
     @Operation(
             summary = "Удаление комнаты (ADMIN)",
+            description = "Удаляет комнату по её id. Доступно только для администраторов. Возвращает сообщение об успешном удалении.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteRoom(@PathVariable Long id) {
         roomService.deleteRoom(id);
-        return ResponseEntity.ok("Successfully");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

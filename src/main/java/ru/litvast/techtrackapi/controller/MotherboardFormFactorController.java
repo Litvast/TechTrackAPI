@@ -24,19 +24,8 @@ public class MotherboardFormFactorController {
     private final MotherboardFormFactorService formFactorService;
 
     @Operation(
-            summary = "Получение всех форм-факторов с пагинацией",
-            description = "В ответ выдаётся страница с объектами MotherboardFormFactorDto.",
-            security = @SecurityRequirement(name = "bearerAuth")
-    )
-    @GetMapping
-    public ResponseEntity<?> getAllFormFactors(@PageableDefault(size = 20, sort = "name") Pageable pageable) {
-        Page<MotherboardFormFactorDto> formFactors = formFactorService.getAllFormFactors(pageable);
-        return ResponseEntity.ok(formFactors);
-    }
-
-    @Operation(
             summary = "Добавление нового форм-фактора (ADMIN)",
-            description = "В ответ выдаётся созданный объект MotherboardFormFactorDto.",
+            description = "Создаёт новый форм-фактор материнской платы. Доступно только для администраторов. Возвращает созданный объект MotherboardFormFactorDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PostMapping("/add")
@@ -47,8 +36,19 @@ public class MotherboardFormFactorController {
     }
 
     @Operation(
+            summary = "Получение всех форм-факторов с пагинацией",
+            description = "Возвращает страницу со списком всех форм-факторов материнских плат с поддержкой пагинации и сортировки по названию.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @GetMapping
+    public ResponseEntity<?> getAllFormFactors(@PageableDefault(size = 20, sort = "name") Pageable pageable) {
+        Page<MotherboardFormFactorDto> formFactors = formFactorService.getAllFormFactors(pageable);
+        return ResponseEntity.ok(formFactors);
+    }
+
+    @Operation(
             summary = "Обновление форм-фактора по id (ADMIN)",
-            description = "В ответ выдаётся обновлённый объект MotherboardFormFactorDto.",
+            description = "Обновляет данные существующего форм-фактора по его id. Доступно только для администраторов. Возвращает обновлённый объект MotherboardFormFactorDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PutMapping("/{id}")
@@ -60,13 +60,13 @@ public class MotherboardFormFactorController {
 
     @Operation(
             summary = "Удаление форм-фактора по id (ADMIN)",
-            description = "В ответ выдаётся сообщение об успешном удалении.",
+            description = "Удаляет форм-фактор материнской платы по его id. Доступно только для администраторов. Возвращает сообщение об успешном удалении.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteFormFactor(@PathVariable Long id) {
         formFactorService.deleteFormFactor(id);
-        return ResponseEntity.ok("Successfully");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

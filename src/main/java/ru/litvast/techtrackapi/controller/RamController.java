@@ -26,8 +26,8 @@ public class RamController {
     private final RamService ramService;
 
     @Operation(
-            summary = "Добавление RAM (ADMIN)",
-            description = "В ответ выдаётся созданный объект RamDto.",
+            summary = "Добавление одной планки RAM (ADMIN)",
+            description = "Создаёт новую запись оперативной памяти с указанными характеристиками. Доступно только для администраторов. Возвращает созданный объект RamDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PostMapping("/add")
@@ -38,8 +38,8 @@ public class RamController {
     }
 
     @Operation(
-            summary = "Добавление нескольких RAM (ADMIN)",
-            description = "В ответ выдаётся список созданных объектов RamDto.",
+            summary = "Добавление нескольких планок RAM (ADMIN)",
+            description = "Создаёт несколько записей оперативной памяти за один запрос. Принимает список DTO. Доступно только для администраторов. Возвращает список созданных объектов RamDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PostMapping("/add-list")
@@ -50,8 +50,8 @@ public class RamController {
     }
 
     @Operation(
-            summary = "Получение всех RAM с пагинацией",
-            description = "В ответ выдаётся страница с объектами RamDto.",
+            summary = "Получение всех планок RAM с пагинацией",
+            description = "Возвращает страницу со списком всех записей оперативной памяти с поддержкой пагинации и сортировки по названию.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping
@@ -61,8 +61,8 @@ public class RamController {
     }
 
     @Operation(
-            summary = "Поиск RAM по id",
-            description = "В ответ выдаётся найденный объект RamDto.",
+            summary = "Поиск планки RAM по id",
+            description = "Возвращает запись оперативной памяти по её идентификатору.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/{id}")
@@ -72,8 +72,8 @@ public class RamController {
     }
 
     @Operation(
-            summary = "Поиск RAM по имени",
-            description = "В ответ выдаётся найденный объект RamDto.",
+            summary = "Поиск планки RAM по названию",
+            description = "Возвращает запись оперативной памяти по её названию (регистронезависимый поиск).",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/by-name/{name}")
@@ -83,8 +83,8 @@ public class RamController {
     }
 
     @Operation(
-            summary = "Обновление RAM по id (ADMIN)",
-            description = "В ответ выдаётся обновлённый объект RamDto.",
+            summary = "Обновление планки RAM (ADMIN)",
+            description = "Обновляет данные существующей записи оперативной памяти по её id. Доступно только для администраторов. Возвращает обновлённый объект RamDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PutMapping("/{id}")
@@ -96,14 +96,14 @@ public class RamController {
     }
 
     @Operation(
-            summary = "Удаление RAM по id (ADMIN)",
-            description = "В ответ выдаётся сообщение об успешном удалении.",
+            summary = "Удаление планки RAM (ADMIN)",
+            description = "Удаляет запись оперативной памяти по её id. Доступно только для администраторов. Возвращает сообщение об успешном удалении.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteRam(@PathVariable Long id) {
         ramService.deleteRam(id);
-        return ResponseEntity.ok("Successfully");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

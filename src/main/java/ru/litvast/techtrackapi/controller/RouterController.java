@@ -26,6 +26,7 @@ public class RouterController {
 
     @Operation(
             summary = "Добавление роутера (ADMIN)",
+            description = "Создаёт новый роутер с указанными параметрами. Доступно только для администраторов. Возвращает созданный объект RouterDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PostMapping("/add")
@@ -37,6 +38,7 @@ public class RouterController {
 
     @Operation(
             summary = "Получение всех роутеров с пагинацией",
+            description = "Возвращает страницу со списком всех роутеров с поддержкой пагинации и сортировки по названию.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping
@@ -47,6 +49,7 @@ public class RouterController {
 
     @Operation(
             summary = "Поиск роутера по id",
+            description = "Возвращает роутер по его идентификатору.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/{id}")
@@ -56,7 +59,8 @@ public class RouterController {
     }
 
     @Operation(
-            summary = "Поиск роутера по имени",
+            summary = "Поиск роутера по названию",
+            description = "Возвращает роутер по его названию (регистронезависимый поиск).",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/by-name/{name}")
@@ -67,6 +71,7 @@ public class RouterController {
 
     @Operation(
             summary = "Поиск роутера по инвентарному номеру",
+            description = "Возвращает роутер по его уникальному инвентарному номеру.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/by-inventory/{inventoryNumber}")
@@ -77,7 +82,7 @@ public class RouterController {
 
     @Operation(
             summary = "Подсчёт общего количества роутеров",
-            description = "В ответ выдаётся подсчитанное количество роутеров.",
+            description = "Возвращает общее количество роутеров в системе.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/count")
@@ -88,6 +93,7 @@ public class RouterController {
 
     @Operation(
             summary = "Обновление роутера (ADMIN)",
+            description = "Обновляет данные существующего роутера по его id. Доступно только для администраторов. Возвращает обновлённый объект RouterDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PutMapping("/{id}")
@@ -100,12 +106,13 @@ public class RouterController {
 
     @Operation(
             summary = "Удаление роутера (ADMIN)",
+            description = "Удаляет роутер по его id. Доступно только для администраторов. Возвращает сообщение об успешном удалении.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteRouter(@PathVariable Long id) {
         routerService.deleteRouter(id);
-        return ResponseEntity.ok("Successfully");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

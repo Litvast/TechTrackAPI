@@ -25,7 +25,7 @@ public class PowerSupplyController {
 
     @Operation(
             summary = "Добавление блока питания (ADMIN)",
-            description = "В ответ выдаётся созданный объект PowerSupplyDto.",
+            description = "Создаёт новый блок питания с указанными параметрами. Доступно только для администраторов. Возвращает созданный объект PowerSupplyDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PostMapping("/add")
@@ -37,7 +37,7 @@ public class PowerSupplyController {
 
     @Operation(
             summary = "Получение всех блоков питания с пагинацией",
-            description = "В ответ выдаётся страница с объектами PowerSupplyDto.",
+            description = "Возвращает страницу со списком всех блоков питания с поддержкой пагинации и сортировки по названию.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping
@@ -48,7 +48,7 @@ public class PowerSupplyController {
 
     @Operation(
             summary = "Поиск блока питания по id",
-            description = "В ответ выдаётся найденный объект PowerSupplyDto.",
+            description = "Возвращает блок питания по его идентификатору.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/{id}")
@@ -58,8 +58,8 @@ public class PowerSupplyController {
     }
 
     @Operation(
-            summary = "Поиск блока питания по имени",
-            description = "В ответ выдаётся найденный объект PowerSupplyDto.",
+            summary = "Поиск блока питания по названию",
+            description = "Возвращает блок питания по его названию (регистронезависимый поиск).",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/by-name/{name}")
@@ -69,8 +69,8 @@ public class PowerSupplyController {
     }
 
     @Operation(
-            summary = "Обновление блока питания по id (ADMIN)",
-            description = "В ответ выдаётся обновлённый объект PowerSupplyDto.",
+            summary = "Обновление блока питания (ADMIN)",
+            description = "Обновляет данные существующего блока питания по его id. Доступно только для администраторов. Возвращает обновлённый объект PowerSupplyDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PutMapping("/{id}")
@@ -82,14 +82,14 @@ public class PowerSupplyController {
     }
 
     @Operation(
-            summary = "Удаление блока питания по id (ADMIN)",
-            description = "В ответ выдаётся сообщение об успешном удалении.",
+            summary = "Удаление блока питания (ADMIN)",
+            description = "Удаляет блок питания по его id. Доступно только для администраторов. Возвращает сообщение об успешном удалении.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deletePowerSupply(@PathVariable Long id) {
         powerSupplyService.deletePowerSupply(id);
-        return ResponseEntity.ok("Successfully");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

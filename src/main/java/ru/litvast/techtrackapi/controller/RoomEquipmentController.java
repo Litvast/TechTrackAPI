@@ -26,6 +26,7 @@ public class RoomEquipmentController {
 
     @Operation(
             summary = "Добавление оборудования в комнату (ADMIN)",
+            description = "Создаёт новую запись о привязке оборудования к комнате. Доступно только для администраторов. Возвращает созданный объект RoomEquipmentDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PostMapping("/add")
@@ -37,6 +38,7 @@ public class RoomEquipmentController {
 
     @Operation(
             summary = "Получение всех записей оборудования в комнатах с пагинацией",
+            description = "Возвращает страницу со всеми записями о привязке оборудования к комнатам с поддержкой пагинации и сортировки по id.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping
@@ -47,6 +49,7 @@ public class RoomEquipmentController {
 
     @Operation(
             summary = "Получение оборудования по комнате",
+            description = "Возвращает страницу записей о привязке оборудования к указанной комнате. Поддерживает пагинацию.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/by-room/{roomId}")
@@ -58,6 +61,7 @@ public class RoomEquipmentController {
 
     @Operation(
             summary = "Получение комнат по оборудованию",
+            description = "Возвращает страницу записей о привязке указанного оборудования к комнатам. Поддерживает пагинацию.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/by-equipment/{equipmentId}")
@@ -69,6 +73,7 @@ public class RoomEquipmentController {
 
     @Operation(
             summary = "Поиск записи по id",
+            description = "Возвращает запись о привязке оборудования к комнате по её идентификатору.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/{id}")
@@ -79,7 +84,7 @@ public class RoomEquipmentController {
 
     @Operation(
             summary = "Подсчёт общего количества записей об оборудовании в комнатах",
-            description = "В ответ выдаётся подсчитанное количество записей",
+            description = "Возвращает общее количество записей о привязке оборудования к комнатам в системе.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/count")
@@ -90,6 +95,7 @@ public class RoomEquipmentController {
 
     @Operation(
             summary = "Обновление записи (ADMIN)",
+            description = "Обновляет данные существующей записи о привязке оборудования к комнате. Доступно только для администраторов. Возвращает обновлённый объект RoomEquipmentDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PutMapping("/{id}")
@@ -102,12 +108,13 @@ public class RoomEquipmentController {
 
     @Operation(
             summary = "Удаление записи (ADMIN)",
+            description = "Удаляет запись о привязке оборудования к комнате по её id. Доступно только для администраторов. Возвращает сообщение об успешном удалении.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteRoomEquipment(@PathVariable Long id) {
         roomEquipmentService.deleteRoomEquipment(id);
-        return ResponseEntity.ok("Successfully");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

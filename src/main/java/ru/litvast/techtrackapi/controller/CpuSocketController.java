@@ -24,19 +24,8 @@ public class CpuSocketController {
     private final CpuSocketService cpuSocketService;
 
     @Operation(
-            summary = "Получение всех сокетов с пагинацией",
-            description = "В ответ выдаётся страница с объектами CpuSocketDto.",
-            security = @SecurityRequirement(name = "bearerAuth")
-    )
-    @GetMapping
-    public ResponseEntity<?> getAllCpuSockets(@PageableDefault(size = 20, sort = "name") Pageable pageable) {
-        Page<CpuSocketDto> cpuSockets = cpuSocketService.getAllCpuSockets(pageable);
-        return ResponseEntity.ok(cpuSockets);
-    }
-
-    @Operation(
             summary = "Добавление нового сокета (ADMIN)",
-            description = "В ответ выдаётся созданный объект CpuSocketDto.",
+            description = "Создаёт новый сокет. Доступно только для администраторов. Возвращает созданный объект CpuSocketDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PostMapping("/add")
@@ -47,8 +36,19 @@ public class CpuSocketController {
     }
 
     @Operation(
+            summary = "Получение всех сокетов с пагинацией",
+            description = "Возвращает страницу со списком всех сокетов с поддержкой пагинации и сортировки по названию.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @GetMapping
+    public ResponseEntity<?> getAllCpuSockets(@PageableDefault(size = 20, sort = "name") Pageable pageable) {
+        Page<CpuSocketDto> cpuSockets = cpuSocketService.getAllCpuSockets(pageable);
+        return ResponseEntity.ok(cpuSockets);
+    }
+
+    @Operation(
             summary = "Обновление сокета по id (ADMIN)",
-            description = "В ответ выдаётся обновлённый объект CpuSocketDto.",
+            description = "Обновляет данные существующего сокета по его id. Доступно только для администраторов. Возвращает обновлённый объект CpuSocketDto.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PutMapping("/{id}")
@@ -60,13 +60,13 @@ public class CpuSocketController {
 
     @Operation(
             summary = "Удаление сокета по id (ADMIN)",
-            description = "В ответ выдаётся сообщение об успешном удалении.",
+            description = "Удаляет сокет по его id. Доступно только для администраторов. Возвращает сообщение об успешном удалении.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteCpuSocket(@PathVariable Long id) {
         cpuSocketService.deleteCpuSocket(id);
-        return ResponseEntity.ok("Successfully");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
