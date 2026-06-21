@@ -76,6 +76,17 @@ public class PrinterController {
     }
 
     @Operation(
+            summary = "Подсчёт общего количества принтеров",
+            description = "В ответ выдаётся подсчитанное количество принтеров.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @GetMapping("/count")
+    public ResponseEntity<?> getCountPrinters() {
+        long countPrinters = printerService.getCountPrinters();
+        return ResponseEntity.ok(countPrinters);
+    }
+
+    @Operation(
             summary = "Обновление принтера (ADMIN)",
             security = @SecurityRequirement(name = "bearerAuth")
     )

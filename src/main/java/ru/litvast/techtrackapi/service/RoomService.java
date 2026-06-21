@@ -121,6 +121,11 @@ public class RoomService {
         return roomMapping.toDto(room);
     }
 
+    public long getCountRooms() {
+        log.debug("Подсчёт общего количества комнат");
+        return roomRepository.count();
+    }
+
     @Transactional
     public RoomDto updateRoom(Long id, RoomUpdateDto dto) {
         log.info("=== НАЧАЛО: Обновление комнаты ===");

@@ -23,6 +23,7 @@ public class RouterService {
     private final RouterRepository routerRepository;
     private final RouterMapping routerMapping;
 
+    // CREATE
     @Transactional
     public RouterDto addRouter(RouterDto dto) {
         log.info("=== НАЧАЛО: Добавление роутера ===");
@@ -49,6 +50,7 @@ public class RouterService {
         return routerMapping.toDto(router);
     }
 
+    // READ all with pagination
     public Page<RouterDto> getAllRouters(Pageable pageable) {
         log.debug("Запрос всех роутеров с пагинацией");
 
@@ -62,6 +64,7 @@ public class RouterService {
         return routers.map(routerMapping::toDto);
     }
 
+    // READ by id
     public RouterDto getRouterById(Long id) {
         log.debug("Поиск роутера по ID: {}", id);
 
@@ -76,6 +79,7 @@ public class RouterService {
         return routerMapping.toDto(router);
     }
 
+    // READ by name
     public RouterDto getRouterByName(String name) {
         log.debug("Поиск роутера по названию: {}", name);
 
@@ -90,6 +94,7 @@ public class RouterService {
         return routerMapping.toDto(router);
     }
 
+    // READ by inventory number
     public RouterDto getRouterByInventoryNumber(String inventoryNumber) {
         log.debug("Поиск роутера по инвентарному номеру: {}", inventoryNumber);
 
@@ -104,6 +109,14 @@ public class RouterService {
         return routerMapping.toDto(router);
     }
 
+    // COUNT
+    public long getCountRouters() {
+        log.debug("Подсчёт общего количества роутеров");
+
+        return routerRepository.count();
+    }
+
+    // UPDATE
     @Transactional
     public RouterDto updateRouter(Long id, RouterUpdateDto dto) {
         log.info("=== НАЧАЛО: Обновление роутера ===");
@@ -182,6 +195,7 @@ public class RouterService {
         return routerMapping.toDto(existingRouter);
     }
 
+    // DELETE
     @Transactional
     public void deleteRouter(Long id) {
         log.info("=== НАЧАЛО: Удаление роутера ===");

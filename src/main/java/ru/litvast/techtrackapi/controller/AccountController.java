@@ -27,7 +27,8 @@ public class AccountController {
     private final UserService userService;
 
     @Tag(name = "auth", description = "Методы для регистрации и аутентификации в системе")
-    @Operation(summary = "Регистрация пользователя", description = "В ответ выдаётся сообщение о успешной регистрации.")
+    @Operation(summary = "Регистрация пользователя",
+            description = "В ответ выдаётся сообщение о успешной регистрации.")
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@Valid @RequestBody UserCredentialsDto user) {
         userService.signup(user);
@@ -35,7 +36,8 @@ public class AccountController {
     }
 
     @Tag(name = "auth", description = "Методы для регистрации и аутентификации в системе")
-    @Operation(summary = "Авторизация пользователя", description = "В ответ выдаётся json-объект с двумя JWT-токенами: access и refresh.")
+    @Operation(summary = "Авторизация пользователя",
+            description = "В ответ выдаётся json-объект с двумя JWT-токенами: access и refresh.")
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@Valid @RequestBody UserCredentialsDto user) {
         JwtTokensDto tokens = userService.signin(user);
@@ -43,7 +45,9 @@ public class AccountController {
     }
 
     @Tag(name = "auth", description = "Методы для регистрации и аутентификации в системе")
-    @Operation(summary = "Обновление access токена", description = "В ответ выдаётся json-объект с двумя JWT-токенами.", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Обновление access токена",
+            description = "В ответ выдаётся json-объект с двумя JWT-токенами.",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping("/refreshUserToken")
     public ResponseEntity<?> refresh(@Valid @RequestBody RefreshTokenDto refreshTokenDTO) {
         JwtTokensDto tokens = userService.refreshUserToken(refreshTokenDTO);
@@ -51,7 +55,9 @@ public class AccountController {
     }
 
     @Tag(name = "users", description = "Методы для работы с аккаунтами пользователей")
-    @Operation(summary = "Добавление пользователя в систему (ADMIN)", description = "В ответ выдаётся объект User-а.", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Добавление пользователя в систему (ADMIN)",
+            description = "В ответ выдаётся объект User-а.",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping("/users/add")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> addUser(@Valid @RequestBody UserCreateDto userCreateDTO) {
@@ -60,7 +66,9 @@ public class AccountController {
     }
 
     @Tag(name = "users", description = "Методы для работы с аккаунтами пользователей")
-    @Operation(summary = "Изменение данных пользователя по id (ADMIN)", description = "В ответ выдаётся обновлённый объект User-а.", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Изменение данных пользователя по id (ADMIN)",
+            description = "В ответ выдаётся обновлённый объект User-а.",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @PutMapping("/users/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateUser(@PathVariable String id, @Valid @RequestBody UserUpdateDto userUpdateDTO) {

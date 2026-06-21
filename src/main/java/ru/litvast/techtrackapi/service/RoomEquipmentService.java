@@ -141,6 +141,11 @@ public class RoomEquipmentService {
         return roomEquipmentMapping.toDto(item);
     }
 
+    public long getCountRoomEquipments() {
+        log.debug("Подсчёт общего количества записей об оборудовании в комнатах");
+        return roomEquipmentRepository.count();
+    }
+
     @Transactional
     public RoomEquipmentDto updateRoomEquipment(Long id, RoomEquipmentUpdateDto dto) {
         log.info("=== НАЧАЛО: Обновление записи оборудования в комнате ===");

@@ -98,6 +98,25 @@ public class CompanyService {
         return companyMapping.toDto(company);
     }
 
+    public CompanyDto getCompanyByRoomId(long roomId) {
+        log.debug("Поиск компании по айди кабинета: {}", roomId);
+
+        Company company = companyRepository.findByBuildings_Floors_Rooms_Id(roomId)
+                .orElseThrow(() -> {
+                    log.error("Компания с кабинетом по айди '{}' не найдена", roomId);
+                    return new EntityNotFoundException(
+                            String.format("Company with room id '%d' not found", roomId)
+                    );
+                });
+
+        return companyMapping.toDto(company);
+    }
+
+    public long getCountCompanies() {
+        log.debug("Подсчёт общего количества компаний");
+        return companyRepository.count();
+    }
+
     @Transactional
     public CompanyDto updateCompany(Long id, CompanyUpdateDto dto) {
         log.info("=== НАЧАЛО: Обновление компании ===");

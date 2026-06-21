@@ -3,6 +3,7 @@ package ru.litvast.techtrackapi.model.dto.equipment;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import ru.litvast.techtrackapi.model.entity.equipment.RouterBand;
 import ru.litvast.techtrackapi.model.entity.equipment.RouterSecurityStandard;
@@ -10,14 +11,8 @@ import ru.litvast.techtrackapi.model.entity.equipment.RouterSecurityStandard;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RouterUpdateDto {
-
-    @Positive(message = "ID cannot be negative or zero")
-    private Long id;
-
-    private String name;
-    private String manufacturer;
-    private String inventoryNumber;
+@EqualsAndHashCode(callSuper = true)
+public class RouterUpdateDto extends EquipmentUpdateDto {
 
     @Positive(message = "WAN bandwidth cannot be negative or zero")
     private Integer wanBandwidth;

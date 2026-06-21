@@ -78,6 +78,17 @@ public class RoomEquipmentController {
     }
 
     @Operation(
+            summary = "Подсчёт общего количества записей об оборудовании в комнатах",
+            description = "В ответ выдаётся подсчитанное количество записей",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @GetMapping("/count")
+    public ResponseEntity<?> getCountRoomEquipments() {
+        long count = roomEquipmentService.getCountRoomEquipments();
+        return ResponseEntity.ok(count);
+    }
+
+    @Operation(
             summary = "Обновление записи (ADMIN)",
             security = @SecurityRequirement(name = "bearerAuth")
     )

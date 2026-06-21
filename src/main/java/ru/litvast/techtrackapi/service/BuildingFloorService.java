@@ -123,6 +123,11 @@ public class BuildingFloorService {
         return buildingFloorMapping.toDto(floor);
     }
 
+    public long getCountFloors() {
+        log.debug("Подсчёт общего количества этажей");
+        return buildingFloorRepository.count();
+    }
+
     @Transactional
     public BuildingFloorDto updateBuildingFloor(Long id, BuildingFloorUpdateDto dto) {
         log.info("=== НАЧАЛО: Обновление этажа ===");

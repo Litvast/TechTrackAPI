@@ -23,6 +23,7 @@ public class PrinterService {
     private final PrinterRepository printerRepository;
     private final PrinterMapping printerMapping;
 
+    // CREATE
     @Transactional
     public PrinterDto addPrinter(PrinterDto dto) {
         log.info("=== НАЧАЛО: Добавление принтера ===");
@@ -49,6 +50,7 @@ public class PrinterService {
         return printerMapping.toDto(printer);
     }
 
+    // READ all with pagination
     public Page<PrinterDto> getAllPrinters(Pageable pageable) {
         log.debug("Запрос всех принтеров с пагинацией");
 
@@ -62,6 +64,7 @@ public class PrinterService {
         return printers.map(printerMapping::toDto);
     }
 
+    // READ by id
     public PrinterDto getPrinterById(Long id) {
         log.debug("Поиск принтера по ID: {}", id);
 
@@ -76,6 +79,7 @@ public class PrinterService {
         return printerMapping.toDto(printer);
     }
 
+    // READ by name
     public PrinterDto getPrinterByName(String name) {
         log.debug("Поиск принтера по названию: {}", name);
 
@@ -90,6 +94,7 @@ public class PrinterService {
         return printerMapping.toDto(printer);
     }
 
+    // READ by inventory number
     public PrinterDto getPrinterByInventoryNumber(String inventoryNumber) {
         log.debug("Поиск принтера по инвентарному номеру: {}", inventoryNumber);
 
@@ -104,6 +109,14 @@ public class PrinterService {
         return printerMapping.toDto(printer);
     }
 
+    // COUNT
+    public long getCountPrinters() {
+        log.debug("Подсчёт общего количества роутеров");
+
+        return printerRepository.count();
+    }
+
+    // UPDATE
     @Transactional
     public PrinterDto updatePrinter(Long id, PrinterUpdateDto dto) {
         log.info("=== НАЧАЛО: Обновление принтера ===");
@@ -195,6 +208,7 @@ public class PrinterService {
         return printerMapping.toDto(existingPrinter);
     }
 
+    // DELETE
     @Transactional
     public void deletePrinter(Long id) {
         log.info("=== НАЧАЛО: Удаление принтера ===");

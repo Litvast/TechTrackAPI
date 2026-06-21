@@ -292,6 +292,7 @@ public class ComputerServiceTests {
         assertThat(actualComputer.getRams().size())
                 .isEqualTo(3);
 
+        // Проверяем, что все нужные методы были вызваны
         verify(computerRepository).existsByNameIgnoreCase(updatedComputer.getName());
         verify(processorService).addProcessor(any(ProcessorDto.class));
         verify(motherboardService).addMotherboard(any(MotherboardDto.class));

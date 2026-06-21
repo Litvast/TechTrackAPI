@@ -194,4 +194,16 @@ public class AssignmentHistoryService {
                 });
         return assignmentHistoryMapping.toDto(history);
     }
+
+    public long getCountAssignments() {
+        log.debug("Подсчёт общего количества задач");
+
+        return assignmentHistoryRepository.count();
+    }
+
+    public long getCountAssignmentsWhereReturnedAtIsNull() {
+        log.debug("Подсчёт количества активных задач");
+
+        return assignmentHistoryRepository.countByReturnedAtIsNull();
+    }
 }

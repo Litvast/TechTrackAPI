@@ -81,6 +81,39 @@ public class EmployeeController {
     }
 
     @Operation(
+            summary = "Поиск сотрудника по юзернейму пользователя",
+            description = "В ответ выдаётся найденный объект EmployeeDto.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @GetMapping("/by-user-username/{userUsername}")
+    public ResponseEntity<?> getEmployeeByUserUsername(@PathVariable("userUsername") String userUsername) {
+        EmployeeDto employee = employeeService.getEmployeeByUserUsername(userUsername);
+        return ResponseEntity.ok(employee);
+    }
+
+    @Operation(
+            summary = "Подсчёт общего количества сотрудников",
+            description = "В ответ выдаётся подсчитанное количество сотрудников.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @GetMapping("/count")
+    public ResponseEntity<?> getCountEmployees() {
+        long countEmployees = employeeService.getCountEmployees();
+        return ResponseEntity.ok(countEmployees);
+    }
+
+    @Operation(
+            summary = "Подсчёт количества сотрудников по айди компании",
+            description = "В ответ выдаётся подсчитанное количество сотрудников.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @GetMapping("/count/by-company-id/{companyId}")
+    public ResponseEntity<?> getCountEmployeesByCompanyId(@PathVariable("companyId") long companyId) {
+        long countEmployees = employeeService.getCountEmployeesByCompanyId(companyId);
+        return ResponseEntity.ok(countEmployees);
+    }
+
+    @Operation(
             summary = "Обновление сотрудника по id (ADMIN)",
             description = "В ответ выдаётся обновлённый объект EmployeeDto.",
             security = @SecurityRequirement(name = "bearerAuth")

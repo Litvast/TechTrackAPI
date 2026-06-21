@@ -208,6 +208,13 @@ public class ComputerService {
         return computerMapping.toDto(computer);
     }
 
+    // COUNT
+    public long getCountComputers() {
+        log.debug("Подсчёт общего количества компьютеров");
+
+        return computerRepository.count();
+    }
+
     // UPDATE
     @Transactional
     public ComputerDto updateComputer(ComputerUpdateDto computerDto) {
@@ -361,18 +368,28 @@ public class ComputerService {
     }
 
     private void checkMotherboardAndRamsCompatibility(MotherboardDto motherboardDto, List<RamDto> ramDtoList) {
-        if (motherboardDto.getMemorySupports() == null) return;
+        if (motherboardDto.getMemorySupports() == null || motherboardDto.getMemorySupports().isEmpty()) return;
 
+        /*
+        Создание массива ключ-значение, где ключом является один из поддерживаемых типов ОЗУ материнской
+        платой, а значением массив ОЗУ. После массив заполняется поддерживаемыми типами ОЗУ.
+        Необходимо это для дальнейшего соотношения поддерживаемого типа с самим ОЗУ.
+        */
         Map<MemorySupportDto, ArrayList<RamDto>> memoryCheckList = new HashMap<>();
         motherboardDto.getMemorySupports().forEach(memorySupportDto ->
                 memoryCheckList.put(memorySupportDto, new ArrayList<>(memorySupportDto.getNumberOfSlots())));
 
+        /*
+        Перебор массива ОЗУ с дальнейшим соотношением ОЗУ к подходящему поддерживаемому типу материнской платы
+        и занесение этого ОЗУ в массив ключ-значения, где ключом является этот подходящий поддерживаемый тип.
+        */
         for (RamDto ramDto : ramDtoList) {
             if (ramDto.getType() == null || ramDto.getFormFactor() == null) continue;
 
             boolean compatible = false;
 
             for (MemorySupportDto memorySupportDto : motherboardDto.getMemorySupports()) {
+                // Различные проверки совместимости поддерживаемого типа и ОЗУ
                 if (!memorySupportDto.getType().equals(ramDto.getType())) continue;
                 if (!memorySupportDto.getFormFactor().equals(ramDto.getFormFactor())) continue;
 
@@ -390,6 +407,10 @@ public class ComputerService {
                 break;
             }
 
+            /*
+            Если ОЗУ не нашла себе необходимый поддерживаемый тип в материнской плате, то выдаётся ошибка
+            и сущность компьютера не сохраняется
+            */
             if (!compatible) {
                 throw new IllegalArgumentException(
                         String.format("RAM '%s' is not compatible with this motherboard", ramDto.getName())
@@ -397,6 +418,11 @@ public class ComputerService {
             }
         }
 
+        /*
+        Проверка достаточности количества каждого поддерживаемого типа материнской платы
+        к количеству помещённой ОЗУ и общего размера памяти к максимально
+        поддерживаемого материнской платой
+        */
         for (MemorySupportDto memorySupportDto : motherboardDto.getMemorySupports()) {
             if (memorySupportDto.getNumberOfSlots() < memoryCheckList.get(memorySupportDto).size()) {
                 throw new IllegalArgumentException(
@@ -425,7 +451,7 @@ public class ComputerService {
     }
 
     private void checkMotherboardAndStorageDevicesCompatibility(MotherboardDto motherboardDto, List<StorageDeviceDto> storageDeviceDtoList) {
-        if (motherboardDto.getStoragePorts() == null) return;
+        if (motherboardDto.getStoragePorts() == null || motherboardDto.getStoragePorts().isEmpty()) return;
 
         Map<StoragePortDto, ArrayList<StorageDeviceDto>> storageCheckList = new HashMap<>();
         motherboardDto.getStoragePorts().forEach(storagePortDto ->

@@ -30,6 +30,7 @@ public class Router extends Equipment {
     @Enumerated(EnumType.STRING)
     private RouterSecurityStandard securityStandard;
 
+    @Column(name = "is_wifi6")
     private Boolean isWiFi6;
     private Boolean isMesh;
     private Integer antennaGain;

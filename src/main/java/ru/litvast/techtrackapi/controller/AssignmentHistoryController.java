@@ -98,4 +98,26 @@ public class AssignmentHistoryController {
         AssignmentHistoryDto assignment = assignmentHistoryService.getCurrentAssignmentByEquipmentId(equipmentId);
         return ResponseEntity.ok(assignment);
     }
+
+    @Operation(
+            summary = "Подсчёт общего количества задач",
+            description = "В ответ выдаётся подсчитанное количество задач",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @GetMapping("/count")
+    public ResponseEntity<?> getCountAssignments() {
+        long countAssignments = assignmentHistoryService.getCountAssignments();
+        return ResponseEntity.ok(countAssignments);
+    }
+
+    @Operation(
+            summary = "Подсчёт количества активных задач",
+            description = "В ответ выдаётся подсчитанное количество активных задач",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @GetMapping("/count/active")
+    public ResponseEntity<?> getCountActiveAssignments() {
+        long countActiveAssignments = assignmentHistoryService.getCountAssignmentsWhereReturnedAtIsNull();
+        return ResponseEntity.ok(countActiveAssignments);
+    }
 }

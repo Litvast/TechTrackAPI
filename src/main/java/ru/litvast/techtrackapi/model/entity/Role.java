@@ -2,5 +2,6 @@ package ru.litvast.techtrackapi.model.entity;
 
 public enum Role {
     ROLE_USER,
+    ROLE_IT_SPEC,
     ROLE_ADMIN
 }

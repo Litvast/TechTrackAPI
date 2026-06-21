@@ -163,6 +163,35 @@ public class EmployeeService {
         return employeeMapping.toDto(employee);
     }
 
+    // READ by user username
+    public EmployeeDto getEmployeeByUserUsername(String username) {
+        log.debug("Поиск сотрудника по юзернейму пользователя: {}", username);
+
+        Employee employee = employeeRepository.findByUser_UsernameIgnoreCase(username)
+                .orElseThrow(() -> {
+                    log.error("Сотрудник с user username '{}' не найден", username);
+                    return new EntityNotFoundException(
+                            String.format("Employee with user username '%s' not found", username)
+                    );
+                });
+
+        return employeeMapping.toDto(employee);
+    }
+
+    // COUNT
+    public long getCountEmployees() {
+        log.debug("Подсчёт общего количества сотрудников");
+
+        return employeeRepository.count();
+    }
+
+    // COUNT by company name
+    public long getCountEmployeesByCompanyId(long companyId) {
+        log.debug("Подсчёт сотрудников по айди компании: {}", companyId);
+
+        return employeeRepository.countByRoom_BuildingFloor_Building_Company_Id(companyId);
+    }
+
     // UPDATE
     @Transactional
     public EmployeeDto updateEmployee(Long id, EmployeeUpdateDto dto) {

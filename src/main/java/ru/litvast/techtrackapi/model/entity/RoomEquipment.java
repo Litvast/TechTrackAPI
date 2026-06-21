@@ -12,7 +12,9 @@ import ru.litvast.techtrackapi.model.entity.equipment.Equipment;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "room_equipment")
+@Table(name = "room_equipment", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"room_id", "equipment_id"})
+})
 public class RoomEquipment {
 
     @Id

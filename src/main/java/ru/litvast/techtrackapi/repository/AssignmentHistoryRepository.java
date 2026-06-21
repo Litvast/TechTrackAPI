@@ -10,4 +10,5 @@ public interface AssignmentHistoryRepository extends JpaRepository<AssignmentHis
     Page<AssignmentHistory> findByEquipmentId(Long equipmentId, Pageable pageable);
     Page<AssignmentHistory> findByEmployeeId(Long employeeId, Pageable pageable);
     Optional<AssignmentHistory> findByEquipmentIdAndReturnedAtIsNull(Long equipmentId);
+    long countByReturnedAtIsNull();
 }

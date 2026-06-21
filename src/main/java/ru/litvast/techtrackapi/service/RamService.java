@@ -145,16 +145,18 @@ public class RamService {
                     );
                 });
 
-        if (!existingRam.getName().equalsIgnoreCase(ramDto.getName())) {
-            log.info("Изменение названия: {} -> {}", existingRam.getName(), ramDto.getName());
+        if (ramDto.getName() != null) {
+            if (!existingRam.getName().equalsIgnoreCase(ramDto.getName())) {
+                log.info("Изменение названия: {} -> {}", existingRam.getName(), ramDto.getName());
 
-            if (ramRepository.existsByNameIgnoreCase(ramDto.getName())) {
-                log.warn("Модуль RAM с названием '{}' уже существует", ramDto.getName());
-                throw new IllegalArgumentException(
-                        String.format("RAM '%s' is already taken", ramDto.getName())
-                );
+                if (ramRepository.existsByNameIgnoreCase(ramDto.getName())) {
+                    log.warn("Модуль RAM с названием '{}' уже существует", ramDto.getName());
+                    throw new IllegalArgumentException(
+                            String.format("RAM '%s' is already taken", ramDto.getName())
+                    );
+                }
+                existingRam.setName(ramDto.getName());
             }
-            existingRam.setName(ramDto.getName());
         }
 
         if (ramDto.getManufacturer() != null) {

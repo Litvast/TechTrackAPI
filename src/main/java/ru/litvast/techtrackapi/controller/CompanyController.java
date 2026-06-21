@@ -76,6 +76,27 @@ public class CompanyController {
     }
 
     @Operation(
+            summary = "Поиск компании по айди кабинета",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @GetMapping("/by-room-id/{roomId}")
+    public ResponseEntity<?> getCompanyByRoomId(@PathVariable("roomId") long roomId) {
+        CompanyDto company = companyService.getCompanyByRoomId(roomId);
+        return ResponseEntity.ok(company);
+    }
+
+    @Operation(
+            summary = "Подсчёт общего количества компаний",
+            description = "В ответ выдаётся подсчитанное количество компаний",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @GetMapping("/count")
+    public ResponseEntity<?> getCountCompanies() {
+        long count = companyService.getCountCompanies();
+        return ResponseEntity.ok(count);
+    }
+
+    @Operation(
             summary = "Обновление компании (ADMIN)",
             security = @SecurityRequirement(name = "bearerAuth")
     )

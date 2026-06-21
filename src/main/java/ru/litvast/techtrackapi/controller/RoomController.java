@@ -77,6 +77,17 @@ public class RoomController {
     }
 
     @Operation(
+            summary = "Подсчёт общего количества комнат",
+            description = "В ответ выдаётся подсчитанное количество комнат",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @GetMapping("/count")
+    public ResponseEntity<?> getCountRooms() {
+        long count = roomService.getCountRooms();
+        return ResponseEntity.ok(count);
+    }
+
+    @Operation(
             summary = "Обновление комнаты (ADMIN)",
             security = @SecurityRequirement(name = "bearerAuth")
     )

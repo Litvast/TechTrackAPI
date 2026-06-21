@@ -76,6 +76,17 @@ public class RouterController {
     }
 
     @Operation(
+            summary = "Подсчёт общего количества роутеров",
+            description = "В ответ выдаётся подсчитанное количество роутеров.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @GetMapping("/count")
+    public ResponseEntity<?> getCountRouters() {
+        long countRouters = routerService.getCountRouters();
+        return ResponseEntity.ok(countRouters);
+    }
+
+    @Operation(
             summary = "Обновление роутера (ADMIN)",
             security = @SecurityRequirement(name = "bearerAuth")
     )

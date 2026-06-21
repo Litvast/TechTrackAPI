@@ -3,6 +3,7 @@ package ru.litvast.techtrackapi.model.dto.equipment.computer;
 import jakarta.validation.Valid;
 import lombok.*;
 import ru.litvast.techtrackapi.model.dto.equipment.EquipmentDto;
+import ru.litvast.techtrackapi.model.dto.equipment.EquipmentUpdateDto;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class ComputerUpdateDto extends EquipmentDto {
+public class ComputerUpdateDto extends EquipmentUpdateDto {
 
     @Valid
     private ProcessorDto processor;

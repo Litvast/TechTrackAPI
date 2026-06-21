@@ -40,8 +40,4 @@ public class Ram {
     private Boolean expoSupport;
     private Boolean dualRank;
     private Boolean onDieEcc;
-
-    public Ram(Long id) {
-        this.id = id;
-    }
 }

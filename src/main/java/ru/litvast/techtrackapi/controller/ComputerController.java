@@ -70,6 +70,17 @@ public class ComputerController {
     }
 
     @Operation(
+            summary = "Подсчёт общего количества компьютеров",
+            description = "В ответ выдаётся подсчитанное количество компьютеров.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @GetMapping("/count")
+    public ResponseEntity<?> getCountComputers() {
+        long countComputers = computerService.getCountComputers();
+        return ResponseEntity.ok(countComputers);
+    }
+
+    @Operation(
             summary = "Обновление компьютера по id (ADMIN)",
             description = "В ответ выдаётся обновлённый объект ComputerDto.",
             security = @SecurityRequirement(name = "bearerAuth")

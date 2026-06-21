@@ -14,14 +14,16 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "buildings")
+@Table(name = "buildings", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"name", "company_id"})
+})
 public class Building {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
 
     private String description;

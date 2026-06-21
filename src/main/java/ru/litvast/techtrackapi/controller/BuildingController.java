@@ -77,6 +77,17 @@ public class BuildingController {
     }
 
     @Operation(
+            summary = "Подсчёт общего количества зданий",
+            description = "В ответ выдаётся подсчитанное количество зданий",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @GetMapping("/count")
+    public ResponseEntity<?> getCountBuildings() {
+        long count = buildingService.getCountBuildings();
+        return ResponseEntity.ok(count);
+    }
+
+    @Operation(
             summary = "Обновление здания (ADMIN)",
             security = @SecurityRequirement(name = "bearerAuth")
     )

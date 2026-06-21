@@ -123,6 +123,11 @@ public class BuildingService {
         return buildingMapping.toDto(building);
     }
 
+    public long getCountBuildings() {
+        log.debug("Подсчёт общего количества зданий");
+        return buildingRepository.count();
+    }
+
     @Transactional
     public BuildingDto updateBuilding(Long id, BuildingUpdateDto dto) {
         log.info("=== НАЧАЛО: Обновление здания ===");

@@ -14,7 +14,9 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "building_floors")
+@Table(name = "building_floors", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"floorNumber", "building_id"})
+})
 public class BuildingFloor {
 
     @Id

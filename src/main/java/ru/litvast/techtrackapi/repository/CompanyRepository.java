@@ -8,4 +8,5 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
     boolean existsByNameIgnoreCase(String name);
     Optional<Company> findByNameIgnoreCase(String name);
     Optional<Company> findByInn(String inn);
+    Optional<Company> findByBuildings_Floors_Rooms_Id(long id);
 }
